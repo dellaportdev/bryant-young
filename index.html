@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bryant Young Resume</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <style>
+        /* Done inline for simplicity and making this one file and portable */
+        :root {
+            font-family: Inter, sans-serif;
+            font-feature-settings: 'liga' 1, 'calt' 1;
+
+            --contrast-color: #EDB564;
+            --highlight-color: #6495ed;
+            --link-color: #fff;
+            --shadow-color: #000;
+            --sidebar-bg: #0002;
+            --glow-color: #fff;
+        }
+
+        @supports (font-variation-settings: normal) {
+            :root {
+                font-family: InterVariable, sans-serif;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #0a192f;
+            background: radial-gradient(circle at bottom right, #102a43, #0a192f);
+            background-attachment: fixed;
+            text-shadow: 1px 1px 1px var(--shadow-color);
+        }
+
+        a,
+        button>div {
+            color: var(--link-color);
+            font-weight: bold;
+            transition: color 1s ease, padding 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--highlight-color);
+        }
+
+        nav a {
+            color: var(--highlight-color);
+            text-transform: uppercase;
+        }
+
+        nav a:hover,
+        nav a.hover {
+            padding-left: 1rem;
+            color: #fff;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .out a,
+        .out button {
+            transition: color 1s ease;
+            text-shadow: 1px 1px 1px #000;
+        }
+
+        .out a:hover,
+        .out i:hover,
+        .out button:hover {
+            color: var(--highlight-color);
+        }
+
+        h3 {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: var(--highlight-color);
+            text-transform: uppercase;
+            padding-right: 1rem;
+        }
+
+        h3::after {
+            content: "";
+            flex-grow: 1;
+            height: 1px;
+            margin-left: 1rem;
+            background-color: currentColor;
+        }
+
+        aside {
+            background-color: var(--sidebar-bg);
+            border: 1px outset #ccc1;
+
+        }
+
+        #skills i {
+            width: 14px;
+        }
+
+        /* sq bullets */
+
+        ul.square-bullets {
+            list-style-type: square;
+        }
+
+        .square-bullets li {
+            position: relative;
+        }
+
+        /* sequential fadein */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media not print {
+            main section {
+                opacity: 0;
+                animation: fadeIn 0.8s ease forwards;
+            }
+        }
+
+        main section:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        main section:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        main section:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        main section:nth-child(4) {
+            animation-delay: 0.8s;
+        }
+
+        main section:nth-child(5) {
+            animation-delay: 1s;
+        }
+
+        /* :target highlight */
+        @keyframes glow {
+            0% {
+                color: var(--glow-color);
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            }
+
+            20% {
+                color: var(--glow-color);
+                text-shadow: 0 0 20px rgba(255, 255, 255, 1);
+            }
+
+            60% {
+                color: var(--glow-color);
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            }
+
+            80% {
+                color: var(--highlight-color);
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            }
+
+            100% {
+                color: var(--highlight-color);
+                text-shadow: none;
+            }
+        }
+
+        section:target h3 {
+            animation: glow 2s forwards;
+        }
+
+        section::before {
+            content: "";
+            display: block;
+            height: 1rem;
+            margin-top: -1rem;
+            visibility: hidden;
+        }
+
+        section:target h3 {
+            color: white;
+        }
+
+        /* tailwind slate colors */
+        .text-slate-300 {
+            --tw-text-opacity: 1;
+            color: rgb(226 232 240/var(--tw-text-opacity))
+        }
+
+        .text-slate-300 {
+            --tw-text-opacity: 1;
+            color: rgb(203 213 225/var(--tw-text-opacity))
+        }
+
+        .text-slate-400 {
+            --tw-text-opacity: 1;
+            color: rgb(148 163 184/var(--tw-text-opacity))
+        }
+
+        .text-slate-500 {
+            --tw-text-opacity: 1;
+            color: rgb(100 116 139/var(--tw-text-opacity))
+        }
+
+        .text-slate-700 {
+            --tw-text-opacity: 1;
+            color: rgb(51 65 85/var(--tw-text-opacity))
+        }
+
+        .bg-slate-600 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(71 85 105/var(--tw-bg-opacity))
+        }
+
+        .bg-slate-900 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(15 23 42/var(--tw-bg-opacity))
+        }
+
+        .bg-slate-900\/10 {
+            background-color: rgba(15, 23, 42, .1)
+        }
+
+        .bg-slate-900\/75 {
+            background-color: rgba(15, 23, 42, .75)
+        }
+
+        /* theme-toggle */
+
+        body.monochrome {
+            all: unset;
+        }
+
+        body.monochrome {
+            transition: none;
+        }
+
+        #theme-toggle {
+            cursor: pointer;
+        }
+
+        body.monochrome * {
+            color: black;
+            background-color: white;
+            text-shadow: none;
+        }
+
+        body.monochrome *:hover {
+            color: inherit;
+            background-color: inherit;
+        }
+
+        body.monochrome a {
+            color: black;
+            text-decoration: underline;
+        }
+
+        body.monochrome .out a {
+            text-decoration: none;
+        }
+
+        body.monochrome section:target h3 {
+            animation: none;
+            color: #000;
+        }
+
+        /* link icons */
+
+        #experience .fa-solid {
+            font-size: 10px;
+            vertical-align: super;
+        }
+
+        /* gradient text */
+
+        @supports (background-clip: text) {
+            .gradient-text {
+                background: linear-gradient(290deg, #333, #fff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                max-width: 100%;
+            }
+
+            .gradient-text h1:before {
+                content: attr(aria-label);
+                position: absolute;
+                left: 2px;
+                top: 2px;
+                color: #111;
+            }
+
+            .gradient-text h1 {
+                background: linear-gradient(290deg, #333, #fff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-shadow: none;
+                position: relative;
+                filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.5));
+            }
+        }
+
+        /* print */
+        .print {
+            display: none;
+        }
+
+        .link-text {
+            display: none;
+        }
+
+
+        @media print {
+            * {
+                text-shadow: none;
+                color: black;
+                background: none;
+            }
+
+            body {
+                background: #fff !important;
+            }
+
+            main {
+                padding-top: 0;
+            }
+
+            section {
+                break-after: page;
+            }
+
+            aside {
+                border: none;
+                padding-bottom: 0 !important;
+            }
+
+            #contact {
+                display: none;
+            }
+
+            #skills {
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            #skills h3:before {
+                display: none;
+            }
+
+            strong {
+                color: #000;
+            }
+
+            .print {
+                display: block;
+            }
+
+            .noprint {
+                display: none;
+            }
+
+            .out {
+                font-size: .75rem;
+                margin-top: 0;
+                line-height: 1rem;
+            }
+
+            #theme-toggle {
+                display: none;
+            }
+
+            body * {
+                color: #000 !important;
+            }
+
+            .link-text {
+                display: inline;
+            }
+
+            .out>a {
+                display: block;
+                line-height: 1.5rem;
+            }
+
+            aside h2 br {
+                display: none;
+            }
+
+            .gradient-text,
+            h1 {
+                color: #000;
+                background: none;
+                background-clip: none;
+                text-shadow: none;
+            }
+
+            h1:before {
+                display: none;
+            }
+        }
+
+
+        /* Waves Animation */
+
+        .waves {
+            margin: -25px -32px -32px;
+            pointer-events: none;
+            z-index: -1;
+            border-bottom: 40px solid #fff;
+        }
+
+        .parallax>use {
+            animation: wave-slide 35s cubic-bezier(.55, .5, .45, .5) infinite;
+        }
+
+        .parallax>use:nth-child(1) {
+            animation-delay: -2s;
+            animation-duration: 7s;
+        }
+
+        .parallax>use:nth-child(2) {
+            animation-delay: -3s;
+            animation-duration: 10s;
+        }
+
+        .parallax>use:nth-child(3) {
+            animation-delay: -4s;
+            animation-duration: 13s;
+        }
+
+        .parallax>use:nth-child(4) {
+            animation-delay: -5s;
+            animation-duration: 20s;
+        }
+
+        @keyframes wave-slide {
+            0% {
+                transform: translate3d(-90px, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(85px, 0, 0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-slate-300 antialiased overflow-x-hidden">
+    <div class="relative w-full max-w-screen-lg flex flex-col lg:flex-row mx-auto md:px-6 h-full">
+        <aside class="p-4 sm:p-8 w-full lg:w-1/3 flex flex-col justify-start lg:sticky lg:top-0 lg:h-screen"
+            role="complementary" aria-label="Sidebar with navigation">
+            <div class="gradient-text noprint">
+                <h1 class="text-5xl font-bold tracking-tight sm:text-7xl pb-2" aria-label="Bryant Young">Bryant Young
+                </h1>
+            </div>
+            <h1 class="print text-5xl font-bold tracking-tight sm:text-6xl mt-0 pt-0"
+                aria-label="Bryant Young (printable header)">Bryant Young</h1>
+            <h2 class="mt-3 text-lg font-medium tracking-tight text-slate-300 sm:text-xl">Front-end/Full Stack<br
+                    class="hidden md:block"> Web Developer</h2>
+            <p class="mt-0.5 text-sm uppercase text-slate-500">San Diego, CA &middot; Remote &middot; Hybrid</p>
+            <p class="mt-2 lg:mt-6 lg:max-w-xs leading-normal"><span class="counter-years"></span> years experience
+                building responsive, API-connected PHP and JavaScript web applications with a strength in front-end
+                UI/UX and CSS.</p>
+            <nav class="mt-6 lg:mt-14 center hidden lg:block" role="navigation" aria-label="Main navigation">
+                <ul class="leading-6">
+                    <li><a href="#skills" data-link="skills"><i class="fas fa-tools mr-2"></i>Skills</a></li>
+                    <li><a href="#about-me" data-link="about-me"><i class="fas fa-user mr-2"></i>About Me</a></li>
+                    <li><a href="#recommendations" data-link="recommendations"><i
+                                class="fas fa-comment-dots mr-2"></i>Recommendations</a></li>
+                    <li><a href="#experience" data-link="experience"><i class="fas fa-briefcase mr-2"></i>Experience</a>
+                    </li>
+                    <li><a href="#contact" data-link="contact"><i class="fas fa-envelope mr-2"></i>Contact</a></li>
+                </ul>
+            </nav>
+
+            <div class="out mt-6 lg:mt-auto text-5xl lg:text-4xl relative z-10 relative lg:text-center"
+                aria-label="Contact and social links">
+                <a href="mailto:bryant@bryant-young.com" aria-label="Website for Bryant" class="print" target="_blank"
+                    rel="noreferrer noopener">
+                    <i class="fa-solid fa-globe"></i>
+                    <span class="link-text"><strong>Online Resume:</strong> https://www.bryant-young.com</span>
+                </a>
+
+                <a href="mailto:bryant@bryant-young.com" class="relative group z-10" aria-label="Email Bryant">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="link-text"><strong>Email:</strong> bryant@bryant-young.com</span>
+                    <div
+                        class="absolute left-1/2 text-center transform -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        My Email
+                    </div>
+                </a>
+
+                <a href="https://www.linkedin.com/in/bryantyoung/" class="relative group z-10"
+                    aria-label="Bryant's LinkedIn profile" target="_blank" rel="noreferrer noopener">
+                    <i class="fa-brands fa-linkedin"></i>
+                    <span class="link-text"><strong>LinkedIn:</strong> https://www.linkedin.com/in/bryantyoung/</span>
+                    <div
+                        class="absolute left-1/2 text-center transform -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        My LinkedIn Profile
+                    </div>
+                </a>
+
+                <a href="https://github.com/Lucidentropy" class="relative group z-10"
+                    aria-label="Bryant's GitHub profile" target="_blank" rel="noreferrer noopener">
+                    <i class="fa-brands fa-github"></i>
+                    <span class="link-text"><strong>GitHub:</strong> https://github.com/Lucidentropy</span>
+                    <div
+                        class="absolute left-1/2 strong text-center transform -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        My Semi-Active Github Profile
+                    </div>
+                </a>
+
+                <button id="print" class="noprint relative group z-10 text-white" aria-label="Print">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <div
+                        class="absolute left-1/2 strong text-center transform -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        Print (to PDF)
+                    </div>
+                </button>
+
+                <button id="theme-toggle" class="noprint relative group z-10 text-white" aria-label="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon"></i>
+                    <div
+                        class="absolute left-1/2 strong text-center transform -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        Toggle Dark Mode
+                    </div>
+                </button>
+
+                <svg class="waves noprint lg:w-auto lg:block hidden opacity-50" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none"
+                    shape-rendering="auto">
+                    <defs>
+                        <path id="wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                    </defs>
+                    <g class="parallax">
+                        <use xlink:href="#wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+                        <use xlink:href="#wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+                        <use xlink:href="#wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+                        <use xlink:href="#wave" x="48" y="7" fill="#fff" />
+                    </g>
+                </svg>
+            </div>
+
+        </aside>
+
+        <main class="p-4 sm:p-8 w-full lg:w-2/3 overflow-y-auto pt-4 sm:pt-2 relative" role="main">
+
+            <section id="skills" class="mb-12 mt-0 sm:mt-4">
+                <h3 class="font-semibold mb-4 highlight">Relevant Skills</h3>
+
+                <div class="text-sm grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 text-slate-300 mx-4">
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fab fa-js-square mr-2"></i> JavaScript
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fab fa-node-js mr-2"></i>Node.js</li>
+                            <li><i class="fab fa-js-square mr-2"></i>TypeScript</li>
+                            <li><i class="fas fa-code mr-2"></i>REST APIs</li>
+                            <li><i class="fas fa-cubes mr-2"></i>Microservices</li>
+                            <li><i class="fab fa-react mr-2"></i>React &middot; SvelteKit</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fab fa-css3-alt mr-2"></i> CSS &middot; Design
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fab fa-sass mr-2"></i>SASS &middot; SCSS</li>
+                            <li><i class="fas fa-ruler-combined mr-2"></i>Pixel Perfect CSS</li>
+                            <li><i class="fas fa-mobile-alt mr-2"></i>Mobile-First</li>
+                            <li><i class="fas fa-arrows-alt mr-2"></i>Responsive Design</li>
+                            <li><i class="fab fa-bootstrap mr-2"></i>Bootstrap &middot; Tailwind</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fab fa-html5 mr-2"></i> HTML
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fab fa-php mr-2"></i>PHP &middot; Zend</li>
+                            <li><i class="fas fa-code mr-2"></i>JSX &middot; Templating</li>
+                            <li><i class="fas fa-file-alt mr-2"></i>Single Page Apps</li>
+                            <li><i class="fas fa-universal-access mr-2"></i>ARIA &middot; Accessibility</li>
+                            <li><i class="fab fa-html5 mr-2"></i>HTML5</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fas fa-database mr-2"></i> Database
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fas fa-database mr-2"></i>MySQL</li>
+                            <li><i class="fas fa-database mr-2"></i>PostgreSQL</li>
+                            <li><i class="fas fa-database mr-2"></i>MongoDB</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fas fa-project-diagram mr-2"></i> Project Workflow
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fas fa-tasks mr-2"></i>Agile &middot; Scrum</li>
+                            <li><i class="fas fa-project-diagram mr-2"></i>JIRA &middot; Confluence</li>
+                            <li><i class="fas fa-comments mr-2"></i>Zoom &middot; Slack &middot; Teams</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fas fa-sync-alt mr-2"></i> CI &middot; CD
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fab fa-jenkins mr-2"></i>Jenkins</li>
+                            <li><i class="fab fa-gitlab mr-2"></i>Gitlab</li>
+                            <li><i class="fas fa-project-diagram mr-2"></i>Bamboo</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fas fa-toolbox mr-2"></i> Tools
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fab fa-git mr-2"></i>Git &middot; Gitlab</li>
+                            <li><i class="fas fa-brain mr-2"></i>LLMs</li>
+                            <li><i class="fas fa-image mr-2"></i>Photoshop</li>
+                            <li><i class="fab fa-docker mr-2"></i>Docker &middot; VMs</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fas fa-tools mr-2"></i> Dev Tools
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fas fa-wrench mr-2"></i>Grunt &middot; Gulp</li>
+                            <li><i class="fas fa-check mr-2"></i>Linting</li>
+                            <li><i class="fab fa-npm mr-2"></i>Webpack &middot; NPM</li>
+                            <li><i class="fas fa-code-branch mr-2"></i>Transpilers</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-bold mb-2 text-yellow-400">
+                            <i class="fas fa-user-friends mr-2"></i> Soft Skills
+                        </p>
+                        <ul class="list-inside list-none">
+                            <li><i class="fas fa-chalkboard-teacher mr-2"></i>Mentoring Jr. Devs</li>
+                            <li><i class="fas fa-tasks mr-2"></i>Project Ownership</li>
+                            <li><i class="fas fa-check-circle mr-2"></i>Code Reviews</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="about-me" class="mb-12">
+                <h3 class="font-semibold mb-4 highlight">About Me</h3>
+
+                <ul class="square-bullets list-inside space-y-1 pl-4">
+                    <li>Self-taught web developer with <span class="counter-years"></span> years of experience.</li>
+                    <li>Full stack developer with an emphasis on front-end and UI/UX.</li>
+                    <li>Remote full-time since 2020 from a dedicated home office.</li>
+                    <li>Can provide positive references from any former team members.</li>
+                    <li>Flexible and open to learning new or adjacent languages.</li>
+                    <li>Strive for best practices, clean, accessible, secure, and scalable code.</li>
+                </ul>
+
+                <p class="mt-6 px-4">
+                    Much of my experience comes from maintaining, refactoring, and adding client requested features to
+                    monolithic enterprise applications. My strengths are in
+                    recreating front-end interfaces to exact UI/UX specifications and often build or modify
+                    microservices to transform data for the front-end. I'm flexible and comfortable with adapting to new
+                    codebases, languages, or workflows.
+                    Additionally, I have experience creating mobile-first applications and responsive design
+                    conversions.
+                </p>
+            </section>
+
+            <section id="recommendations" class="mb-12">
+                <h3 class="font-semibold mb-4 highlight">Written Recommendations</h3>
+                <div class="px-4">
+                    <div class="bg-slate-800 px-6 py-4 rounded-md border-l-4 border-teal-500 text-slate-300 mb-6">
+                        <p>
+                            <strong class="text-yellow-400">William Mohler &middot; SVP Of Product Development at
+                                Voxtur</strong><br>
+                        <p class="text-xs text-slate-400">2023</p>
+                        <p class="italic mt-2 text-sm">"I had the pleasure of managing Bryant at Clarocity, where he
+                            served as a developer. He is a talented
+                            front-end developer, and is particularly skilled at creating exceptional user experiences.
+                            We had a small team and a
+                            complex codebase, and Bryant felt comfortable working anywhere in the stack. I would
+                            consider Bryant for future
+                            development opportunities."</p>
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800 px-6 py-4 rounded-md border-l-4 border-teal-500 text-slate-300 mb-6">
+                        <p>
+                            <strong class="text-yellow-400">Ryan Elston &middot; Director of Technology at
+                                Lunchbox</strong><br>
+                        <p class="text-xs text-slate-400">2018</p>
+                        <p class="italic mt-2 text-sm">"I want to recommend Bryant as one of my star developers during
+                            my time at Lunchbox/Mirum. It has been a joy and pleasure
+                            to watch Bryant develop over the years. He is conscious and thoughtful about the needs of
+                            stakeholders in his implementations. He delivers on time and in full when clear expectations
+                            are set. He
+                            takes an active interest in learning from those around him and is patiently generous with
+                            his time in order to train
+                            others. All while having a smart and jovial sense of humor that makes him fun to be around.
+                            He would be an asset to any
+                            front-end web team"</p>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="experience" class="mb-12">
+                <h3 class="font-semibold mb-4 highlight">Experience</h3>
+
+                <div class="space-y-6">
+                    <div class="px-4">
+                        <div class="flex flex-col">
+                            <strong class="block text-lg font-medium text-yellow-400">
+                                <a class="block sm:inline" target="_blank" rel="noopener noreferrer"
+                                    aria-label="Opens in a new window" href="https://www.dellaport.dev">Dellaport.dev <i
+                                        class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <span class="hidden sm:inline">&middot;</span> Freelance Development
+                            </strong>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-xs uppercase text-slate-400">Feb 2023 &mdash; Current</span>
+                                <span class="text-xs text-slate-400">Fallbrook, CA</span>
+                            </div>
+                        </div>
+                        <p class="text-sm mt-2">
+                            Freelance projects include increasing sales volume by connecting Employee Savings Tickets to
+                            API-based ticketing services and managing servers and custom PHP
+                            plugins for The Village News.
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 mt-3 text-xs noprint">
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-php mr-2 text-blue-600"></i> PHP
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
+                            </div>
+                            <!-- <div class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-css3-alt mr-2 text-blue-500"></i> CSS
+                            </div> -->
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fas fa-code mr-2"></i> API
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4">
+                        <div class="flex flex-col">
+                            <strong class="block text-lg font-medium text-yellow-400">
+                                <a class="block sm:inline" target="_blank" rel="noopener noreferrer"
+                                    aria-label="Opens in a new window" href="https://www.voxtur.com">Voxtur (Clarocity
+                                    Inc) <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <span class="hidden sm:inline">&middot;</span> Full Stack Software Developer
+                            </strong>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-xs uppercase text-slate-400">Aug 2019 &mdash; Feb 2023</span>
+                                <span class="text-xs text-slate-400">Carlsbad, CA</span>
+                            </div>
+                        </div>
+                        <p class="text-sm mt-2">
+                            Application development for on-site real estate appraisal software, primarily using PHP,
+                            Node, and React with
+                            extensive UI/UX and API work. Google Maps integration, PDF Uploads with OCR, Document
+                            generation.
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 mt-3 text-xs noprint">
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-php mr-2 text-blue-600"></i> PHP
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-node-js mr-2 text-blue-600"></i> Node
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
+                            </div>
+                            <!-- <div class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-css3-alt mr-2 text-blue-500"></i> CSS
+                            </div> -->
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fas fa-code mr-2"></i> API
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4">
+                        <div class="flex flex-col">
+                            <strong class="block text-lg font-medium text-yellow-400">
+                                <a class="block sm:inline" target="_blank" rel="noopener noreferrer"
+                                    aria-label="Opens in a new window" href="https://breakdownservices.com/">Nonfat
+                                    Media (Breakdown) <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <span class="hidden sm:inline">&middot;</span> Senior Front-end Developer
+                            </strong>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-xs uppercase text-slate-400">Jan 2018 &mdash; Apr 2019</span>
+                                <span class="text-xs text-slate-400">Los Angeles, CA</span>
+                            </div>
+                        </div>
+                        <p class="text-sm mt-2">
+                            Managed and added features to a React front-end and admin interfaces for actor staffing and
+                            scheduling, worked with a complex build process.
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 mt-3 text-xs noprint">
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-react mr-2 text-blue-600"></i> React
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fa fa-snowflake mr-2 text-yellow-500"></i> Coldfusion
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4">
+                        <div class="flex flex-col">
+                            <strong class="block text-lg font-medium text-yellow-400">
+                                <a class="block sm:inline" target="_blank" rel="noopener noreferrer"
+                                    aria-label="Opens in a new window" href="https://mirumagency.com/">Mirum Agency
+                                    (Lunchbox) <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <span class="hidden sm:inline">&middot;</span> Senior Web Developer
+                            </strong>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-xs uppercase text-slate-400">Jul 2013 &mdash; Jan 2018</span>
+                                <span class="text-xs text-slate-400">Los Angeles, CA</span>
+                            </div>
+                        </div>
+                        <p class="text-sm mt-2">
+                            JavaScript-heavy front-end development for microsites and API updates for global brands such
+                            as Unilever, NCAA, Walmart, LEGO, Oreos, Axe. Mentored juniors, contributed to
+                            frameworks, and developed backend intranet apps.
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 mt-3 text-xs noprint">
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-microsoft mr-2 text-yellow-500"></i> .NET
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-css3-alt mr-2 text-blue-500"></i> CSS
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4">
+                        <div class="flex flex-col">
+                            <strong class="block text-lg font-medium text-yellow-400">
+                                <a class="block sm:inline" target="_blank" rel="noopener noreferrer"
+                                    aria-label="Opens in a new window" href="https://steelhouse.com/">SteelHouse <i
+                                        class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <span class="hidden sm:inline">&middot;</span> UI Developer
+                            </strong>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-xs uppercase text-slate-400">Oct 2011 &mdash; Jul 2013</span>
+                                <span class="text-xs text-slate-400">Los Angeles, CA</span>
+                            </div>
+                        </div>
+                        <p class="text-sm mt-2">
+                            UI/UX development with custom form elements, SQL for large datasets, and analytics
+                            dashboards in a fast-paced startup environment.
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 mt-3 text-xs noprint">
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-php mr-2 text-yellow-500"></i> PHP
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-css3-alt mr-2 text-blue-500"></i> CSS
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4">
+                        <div class="flex flex-col">
+                            <strong class="block text-lg font-medium text-yellow-400">
+                                <a class="block sm:inline" target="_blank" rel="noopener noreferrer"
+                                    aria-label="Opens in a new window" href="https://visioncourse.com/">PSHelper.com
+                                    (VisionCourse) <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <span class="hidden sm:inline">&middot;</span> Front-end Developer
+                            </strong>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-xs uppercase text-slate-400">Nov 2010 &mdash; Oct 2011</span>
+                                <span class="text-xs text-slate-400">Oceanside, CA</span>
+                            </div>
+                        </div>
+                        <p class="text-sm mt-2">
+                            Pixel-perfect cross-browser psd to html, and JavaScript based shopping cart functionality,
+                            compatible in all browsers
+                            including IE 7,8,9.
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 mt-3 text-xs noprint">
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
+                            </div>
+                            <div
+                                class="flex items-center px-3 py-1 bg-gray-800 rounded-md text-xs font-medium border border-gray-700 opacity-50 hover:opacity-100">
+                                <i class="fab fa-css3-alt mr-2 text-blue-500"></i> CSS
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4">
+                        <div class="flex flex-col">
+                            <strong class="block text-lg font-medium text-yellow-400">
+                                <a class="block sm:inline" target="_blank" rel="noopener noreferrer"
+                                    aria-label="Opens in a new window" href="https://thevillagenews.com/">The Village
+                                    News <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <span class="hidden sm:inline">&middot;</span> Web Developer & Support
+                            </strong>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-xs uppercase text-slate-400">Aug 2006 &mdash; Nov 2011</span>
+                                <span class="text-xs text-slate-400">Fallbrook, CA</span>
+                            </div>
+                        </div>
+                        <p class="text-sm mt-2">
+                            Built newspaper CMS from ground up with a significant number of custom-purpose built UIs and
+                            tools
+                            similar in nature to WordPress in a full LAMP environment.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="mb-12" role="contentinfo" aria-label="Contact information">
+                <h3 class="font-semibold mb-4 highlight">Contact</h3>
+                <div class="px-4">
+                    <p class="">Please contact me via email.</p>
+                    <a href="mailto:bryant@bryant-young.com" class="hover:text-highlight">bryant@bryant-young.com</a>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('monochrome');
+        });
+
+        document.getElementById('print').addEventListener('click', () => {
+            window.print();
+        });
+
+        document.querySelectorAll('.counter-years').forEach(el => el.textContent = new Date().getFullYear() - 2004);
+    });
+
+</script>
+
+</html>
