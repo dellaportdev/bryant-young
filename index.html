@@ -278,6 +278,7 @@
     </style>
 
     <style>
+        /* These styles are a fallback if Tailwind is not loaded or otherwise blocked. */
         .no-tw body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 60rem;
@@ -378,8 +379,6 @@
             }
         }        
     </style>
-
-
 </head>
 
 <body class="bg-slate-900 text-slate-300 antialiased overflow-x-hidden">
@@ -479,14 +478,14 @@
 
         <main class="p-4 pb-0 sm:p-8 w-full lg:w-2/3 overflow-y-auto pt-4 sm:pt-2 relative" role="main">
 
-            <div class="panel-tabs-bar flex flex-wrap items-center gap-1.5 mb-6 mt-0 sm:mt-4 print:hidden">
-                <button class="panel-tab" data-panel="resume"><i class="fas fa-file-alt mr-2"></i>Resume</button>
-                <button class="panel-tab" data-panel="examples"><i class="fas fa-laptop-code mr-2"></i>Examples</button>
-                <button class="panel-tab" data-panel="recommendations"><i class="fas fa-comment-dots mr-2"></i>Recommendations</button>
-                <button class="panel-tab" data-panel="faq"><i class="fas fa-question-circle mr-2"></i> FAQ</button>
+            <div class="panel-tabs-bar sticky sm:static top-0 z-30 -mx-4 px-4 sm:mx-0 sm:px-0 py-2 sm:py-0 bg-slate-900/90 backdrop-blur sm:bg-transparent sm:backdrop-blur-none flex items-stretch sm:items-center sm:flex-wrap gap-1.5 mb-6 mt-0 sm:mt-4 print:hidden">
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="resume"><i class="fas fa-file-alt text-lg sm:text-base"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Resume</span></button>
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="examples"><i class="fas fa-laptop-code text-lg sm:text-base"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Examples</span></button>
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="recommendations"><i class="fas fa-comment-dots text-lg sm:text-base"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Recommendations</span></button>
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="faq"><i class="fas fa-question-circle text-lg sm:text-base"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">FAQ</span></button>
             </div>
 
-            <div class="panel-wrap">
+        <div class="panel-wrap">
 
                 <div class="panel" id="panel-resume">
                     <section id="skills" class="mb-12 mt-0 sm:mt-4">
@@ -593,7 +592,7 @@
                             I'm a flexible developer and can adapt to new languages, frameworks, or workflows as needed. 
                             As part of a team, I like to be positive, helpful, approachable, and easy to communicate with, especially with non-technical coworkers. 
                             <br><br>
-                            I learn best by doing; I seek out opportunities that allow me to use what I know, while also exposing me to something new. 
+                            I learn best by doing; I seek out opportunities which allow me to use what I know while also exposing me to something new. 
                             Some example technologies I'd like to get experience working with in the future include: Next.js, GraphQL, Go/Rust, three.js, more complex uses of TypeScript as well as state management and unit testing.
                             Opportunities that overlap with some of my other interests, such as photography, cars, travel, or online gaming are always a plus.
                         </p>
