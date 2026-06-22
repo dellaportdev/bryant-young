@@ -270,7 +270,11 @@
 
         @media (max-width: 480px) {
             html { font-size: 14px; }
-        }        
+        }       
+        
+        @media (min-width: 1024px) and (max-height: 800px) {
+            nav { display: none !important; }
+        }
     </style>
 
     <style>
@@ -387,31 +391,31 @@
                 <a href="mailto:bryant@bryant-young.com" class="relative group z-10" aria-label="Email Bryant">
                     <i class="fa-solid fa-envelope"></i>
                     <span class="link-text"><strong>Email:</strong> bryant@bryant-young.com</span>
-                    <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
+                    <!-- <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
                         My Email
-                    </div>
+                    </div> -->
                 </a>
 
                 <a href="https://www.linkedin.com/in/bryantyoung/" class="relative group z-10" aria-label="Bryant's LinkedIn profile" target="_blank" rel="noreferrer noopener">
                     <i class="fa-brands fa-linkedin"></i>
                     <span class="link-text"><strong>LinkedIn:</strong> https://www.linkedin.com/in/bryantyoung/</span>
-                    <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
+                    <!-- <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
                         My LinkedIn Profile
-                    </div>
+                    </div> -->
                 </a>
 
                 <button id="print" class="print:hidden relative group z-10 text-white" aria-label="Print">
                     <i class="fa-solid fa-file-pdf"></i>
-                    <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
+                    <!-- <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
                         Print (to PDF)
-                    </div>
+                    </div> -->
                 </button>
 
                 <button id="theme-toggle" class="print:hidden relative group z-10 text-white" aria-label="Toggle Dark Mode">
                     <i class="fa-solid fa-moon"></i>
-                    <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
+                    <!-- <div class="hidden lg:block absolute left-1/2 text-center -translate-x-1/2 mt-2 w-32 p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
                         Toggle Dark Mode
-                    </div>
+                    </div> -->
                 </button>
 
                 <svg class="waves print:hidden lg:w-auto lg:block hidden opacity-50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
