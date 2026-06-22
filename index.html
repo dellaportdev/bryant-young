@@ -85,6 +85,12 @@
             background-color: currentColor;
         }
 
+        hr {
+            border: 0;
+            border-top: 1px solid #ffffff14;
+            margin: 0.5rem 0;
+        }
+
         aside { background-color: var(--sidebar-bg); border: 1px outset #ccc1; }
 
         #skills i { width: 14px; }
@@ -92,8 +98,8 @@
 
         ul.square-bullets { list-style-type: square; }
         .square-bullets li { position: relative; }
+        .max-w-screen-lg #skills .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-        /* scroll-anchor offset for :target sections */
         section::before {
             content: "";
             display: block;
@@ -102,10 +108,9 @@
             visibility: hidden;
         }
 
-        /* Component classes — Tailwind utilities composed via @apply to keep markup light */
         @layer components {
             .skill-tag {
-                @apply flex items-center rounded-md border border-gray-700 bg-gray-800 px-3 py-1 text-xs font-medium opacity-50 transition-opacity hover:opacity-100;
+                @apply flex items-center rounded-md bg-gray-800 px-3 py-1 text-xs font-medium opacity-70;
             }
 
             .recommendation-card {
@@ -113,7 +118,7 @@
             }
 
             .faq-item {
-                @apply border-b border-gray-700 pb-5 last:border-0;
+                @apply border-b border-gray-700 pb-4 last:border-0;
             }
 
             .exp-entry { @apply px-4; }
@@ -141,7 +146,6 @@
             }
         }
 
-        /* Panel swap transition */
         .panel.panel-hidden { display: none; }
         .panel.panel-entering { animation: panelIn 0.22s ease forwards; }
 
@@ -150,7 +154,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Sequential section fade-in */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -166,7 +169,6 @@
         main section:nth-child(4) { animation-delay: 0.8s; }
         main section:nth-child(5) { animation-delay: 1s; }
 
-        /* :target glow */
         @keyframes glow {
             0% { color: var(--glow-color); text-shadow: 0 0 15px rgba(255, 255, 255, 0.9); }
             20% { color: var(--glow-color); text-shadow: 0 0 20px rgba(255, 255, 255, 1); }
@@ -177,7 +179,6 @@
 
         section:target h3 { animation: glow 2s forwards; color: #fff; }
 
-        /* Gradient name treatment */
         @supports (background-clip: text) {
             .gradient-text,
             .gradient-text h1 {
@@ -204,20 +205,22 @@
             }
         }
 
-        /* Monochrome toggle */
         body.monochrome { all: unset; transition: none; }
-        body.monochrome * { color: #000; background-color: #fff; text-shadow: none; }
+        body.monochrome * { color: #333; background-color: #fff; text-shadow: none; }
         body.monochrome *:hover { color: inherit; background-color: inherit; }
-        body.monochrome a { color: #000; text-decoration: underline; }
+        body.monochrome a { color: #333; text-decoration: underline; }
         body.monochrome .out a { text-decoration: none; }
         body.monochrome section:target h3 { animation: none; color: #000; }
+        body.monochrome .recommendation-card,
+        body.monochrome .project-entry { border-color: #888; }
+        body.monochrome .project-item::before,
+        body.monochrome .project-sub li::before { color: #888; }
+        body.monochrome .panel-tab.active { color: #333; background: #eee; border-color: #888; }
         #theme-toggle { cursor: pointer; }
 
-        /* Print-only / screen-only helpers */
         .print { display: none; }
-        .link-text { display: none; }
+        .link-text { display: none; font-size:13px;}
 
-        /* Animated sidebar waves */
         .waves {
             margin: -25px -32px -32px;
             pointer-events: none;
@@ -236,13 +239,16 @@
             100% { transform: translate3d(85px, 0, 0); }
         }
 
-        /* Print */
         @media print {
-            * { color: #000 !important; background: none !important; text-shadow: none !important; }
+            html { font-size: 13px; }
+            * { color: #333 !important; background: none !important; text-shadow: none !important; }
             body { background: #fff !important; }
+            strong { color: #1a1a1a !important; }
+            aside h1 { font-size: 2rem; line-height: 1.1; }
             main { padding-top: 0; }
             section { break-after: page; }
             aside { border: none; padding-bottom: 0 !important; }
+            hr { border-color: #ddd; }
             #contact { display: none; }
             #skills { margin: 0; padding-top: 0; }
             #skills h3::before { display: none; }
@@ -251,18 +257,77 @@
             .print { display: block; }
             .link-text { display: inline; }
             .out > a { display: block; line-height: 1.5rem; }
-            /* strip screen-only accent borders/fills so nothing prints in color */
             .recommendation-card,
-            .project-entry { border: 0; background: none; padding-left: 0; }
-            /* every panel prints as its own sequential page */
+            .project-entry { border-color: #dbdbdb !important; background: none; }
+            .project-item::before,
+            .project-sub li::before { color: #888 !important; }
             .panel.panel-hidden { display: block !important; }
             .panel section { opacity: 1 !important; animation: none !important; }
         }
     </style>
+
+    <style>
+        .no-tw body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 60rem;
+            margin: 0 auto;
+            padding: 1.5rem;
+            line-height: 1.6;
+            color: #1a2433;
+            font-size:13px;
+        }
+
+        .no-tw .panel-tabs-bar { display: none; }
+        .no-tw .panel-hidden { display: block; }
+
+        .no-tw #skills .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+            gap: 1.25rem;
+        }
+
+        .no-tw #skills .grid ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .no-tw #skills .grid li {
+            margin-bottom: 0.25rem;
+        }
+
+        .no-tw #skills .grid li i {
+            margin-right: 0.5rem;
+        }
+
+
+        .no-tw svg,
+        .no-tw .gradient-text,
+        .no-tw nav,
+        .no-tw #theme-toggle,
+        .no-tw #width-toggle {
+            display:none;
+        }
+
+        .no-tw .font-semibold{
+            font-weight: 600;
+        }
+
+        .no-tw .skill-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+
+
 </head>
 
 <body class="bg-slate-900 text-slate-300 antialiased overflow-x-hidden">
-    <div class="relative w-full max-w-screen-lg flex flex-col lg:flex-row mx-auto md:px-6 h-full">
+    <div id="layout" class="relative w-full max-w-screen-lg flex flex-col lg:flex-row mx-auto md:px-6 h-full">
         <aside class="p-4 sm:p-8 w-full lg:w-1/3 flex flex-col justify-start lg:sticky lg:top-0 lg:h-screen" role="complementary" aria-label="Sidebar with navigation">
 
             <div class="gradient-text print:hidden">
@@ -284,14 +349,18 @@
             <p class="mt-0.5 text-sm uppercase text-slate-500">
                 San Diego, CA &middot; Remote &middot; Hybrid
             </p>
+            
+            <p class="mt-0.5 text-xs text-slate-500">
+                U.S. Citizen / Resident
+            </p>
 
             <p class="mt-2 lg:mt-6 lg:max-w-xs leading-normal">
-                <span class="counter-years">20</span> years experience building responsive, API-connected PHP and JavaScript web applications with a strength in front-end UI/UX and CSS.
+                22 years experience building responsive, API-connected PHP and JavaScript web applications with a strength in front-end UI/UX and CSS.
             </p>
 
             <nav class="mt-6 lg:mt-14 center hidden lg:block" role="navigation" aria-label="Main navigation">
                 <ul class="leading-6">
-                    <li><a href="#skills" data-link="skills"><i class="fas fa-tools mr-2"></i>Skills</a></li>
+                    <li><a href="#skills" data-link="skills"><i class="fas fa-tools mr-2"></i>Relevant Skills</a></li>
                     <li><a href="#about-me" data-link="about-me"><i class="fas fa-user mr-2"></i>About Me</a></li>
                     <li><a href="#experience" data-link="experience"><i class="fas fa-briefcase mr-2"></i>Experience</a></li>
                     <li><a href="#examples" data-link="examples" data-tab="examples"><i class="fas fa-laptop-code mr-2"></i>Examples</a></li>
@@ -352,7 +421,7 @@
             </div>
         </aside>
 
-        <main class="p-4 sm:p-8 w-full lg:w-2/3 overflow-y-auto pt-4 sm:pt-2 relative" role="main">
+        <main class="p-4 pb-0 sm:p-8 w-full lg:w-2/3 overflow-y-auto pt-4 sm:pt-2 relative" role="main">
 
             <div class="panel-tabs-bar flex flex-wrap items-center gap-1.5 mb-6 mt-0 sm:mt-4 print:hidden">
                 <button class="panel-tab" data-panel="resume"><i class="fas fa-file-alt mr-2"></i>Resume</button>
@@ -366,10 +435,9 @@
                 <div class="panel" id="panel-resume">
                     <section id="skills" class="mb-12 mt-0 sm:mt-4">
                         <h3 class="font-semibold mb-4 highlight">Relevant Skills</h3>
-                        <div class="text-sm grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 text-slate-300 mx-4">
+                        <div class="text-sm grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-6 text-slate-300 mx-4">
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-js-square mr-2"></i>
-                                    JavaScript</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-js-square mr-2"></i> JavaScript</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fab fa-node-js mr-2"></i>Node.js</li>
                                     <li><i class="fab fa-js-square mr-2"></i>TypeScript</li>
@@ -379,8 +447,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-css3-alt mr-2"></i> CSS
-                                    &middot; Design</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-css3-alt mr-2"></i> CSS &middot; Design</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fab fa-sass mr-2"></i>SASS &middot; SCSS</li>
                                     <li><i class="fas fa-ruler-combined mr-2"></i>Pixel Perfect CSS</li>
@@ -392,7 +459,7 @@
                             <div>
                                 <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-html5 mr-2"></i> HTML</p>
                                 <ul class="list-inside list-none">
-                                    <li><i class="fab fa-php mr-2"></i>PHP &middot; Zend</li>
+                                    <li><i class="fab fa-php mr-2"></i>PHP &middot; .NET</li>
                                     <li><i class="fas fa-code mr-2"></i>JSX &middot; Templating</li>
                                     <li><i class="fas fa-file-alt mr-2"></i>Single Page Apps</li>
                                     <li><i class="fas fa-universal-access mr-2"></i>ARIA &middot; Accessibility</li>
@@ -400,17 +467,16 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-database mr-2"></i> Database
-                                </p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-database mr-2"></i> Database</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-database mr-2"></i>MySQL</li>
+                                    <li><i class="fas fa-database mr-2"></i>MSSQL</li>
                                     <li><i class="fas fa-database mr-2"></i>PostgreSQL</li>
                                     <li><i class="fas fa-database mr-2"></i>MongoDB</li>
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-project-diagram mr-2"></i>
-                                    Project Workflow</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-project-diagram mr-2"></i> Project Workflow</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-tasks mr-2"></i>Agile &middot; Scrum</li>
                                     <li><i class="fas fa-project-diagram mr-2"></i>JIRA &middot; Confluence</li>
@@ -418,8 +484,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-sync-alt mr-2"></i> CI
-                                    &middot; CD</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-sync-alt mr-2"></i> CI &middot; CD</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fab fa-jenkins mr-2"></i>Jenkins</li>
                                     <li><i class="fab fa-gitlab mr-2"></i>Gitlab</li>
@@ -435,8 +500,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-tools mr-2"></i> Dev Tools
-                                </p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-tools mr-2"></i> Dev Tools</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-wrench mr-2"></i>Vite &middot; Grunt &middot; Gulp</li>
                                     <li><i class="fas fa-check mr-2"></i>Linting</li>
@@ -445,8 +509,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-user-friends mr-2"></i> Soft
-                                    Skills</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-user-friends mr-2"></i> Soft Skills</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-chalkboard-teacher mr-2"></i>Mentoring Jr. Devs</li>
                                     <li><i class="fas fa-tasks mr-2"></i>Project Ownership</li>
@@ -456,25 +519,27 @@
                         </div>
                     </section>
 
-                    <section id="about-me" class="mb-12">
+                    <section id="about-me" class="mb-12 ">
                         <h3 class="font-semibold mb-4 highlight">About Me</h3>
                         <ul class="square-bullets list-inside space-y-1 pl-4">
-                            <li>Self-taught web developer with <span class="counter-years">20</span> years of experience.
-                            </li>
-                            <li>Full stack developer with an emphasis on front-end and UI/UX.</li>
+                            <li>Self-taught software engineer with 22 years of experience.</li>
+                            <li>Full stack with an emphasis on front-end and UI/UX.</li>
                             <li>Remote full-time since 2020 from a dedicated home office.</li>
                             <li>Can provide positive references from any former team members.</li>
                             <li>Flexible and open to learning new or adjacent languages.</li>
-                            <li>Strive for best practices, clean, accessible, secure, and scalable code.</li>
+                            <li>Balances best practices with delivering work on time.</li>
                         </ul>
                         <p class="mt-6 px-4">
-                            Much of my experience is building front-end interfaces for API-connected applications and the backend to support them. 
-                            While my strengths are in front-end development and UI/UX, I have extensive experience working with back-end APIs and relational databases.
-                            Additionally, I have experience creating browser compatible, mobile-first applications and responsive design conversions.       
+                            Much of my experience is from building front-end interfaces for API-connected applications and the backend to support them. 
+                            While my strengths are in front-end and UI/UX, I have extensive experience working with back-end APIs, microservices, and relational databases.
+                            Some examples of work I enjoy include: building complex interfaces and dashboards, recreating UI from another medium to a website or app, modernizing legacy systems, and transforming data from multiple APIs into improved and more functional interfaces.
                             <br><br>
-                            I'm flexible and comfortable with adapting to new codebases, languages, or workflows. 
-                            I have a history of being a positive, helpful, collaborative team player as well as being approachable and easy to communicate with, especially with non-technical coworkers. 
-                        
+                            I'm a flexible developer and can adapt to new languages, frameworks, or workflows as needed. 
+                            As part of a team, I like to be positive, helpful, approachable, and easy to communicate with, especially with non-technical coworkers. 
+                            <br><br>
+                            I learn best by doing; I seek out opportunities that allow me to use what I know, while also exposing me to something new. 
+                            Some example technologies I'd like to get experience working with in the future include: Next.js, GraphQL, Go/Rust, three.js, more complex uses of TypeScript as well as state management and unit testing.
+                            Opportunities that overlap with some of my other interests, such as photography, cars, travel, or online gaming are always a plus.
                         </p>
                     </section>
 
@@ -500,8 +565,7 @@
                                     custom PHP plugins for The Village News.</p>
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
                                     <div class="skill-tag"><i class="fab fa-php mr-2 text-blue-600"></i> PHP</div>
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
                                     <div class="skill-tag"><i class="fas fa-code mr-2"></i> API</div>
                                 </div>
                             </div>
@@ -527,8 +591,7 @@
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
                                     <div class="skill-tag"><i class="fab fa-php mr-2 text-blue-600"></i> PHP</div>
                                     <div class="skill-tag"><i class="fab fa-node-js mr-2 text-blue-600"></i> Node</div>
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
                                     <div class="skill-tag"><i class="fas fa-code mr-2"></i> API</div>
                                 </div>
                             </div>
@@ -550,10 +613,8 @@
                                 </p>
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
                                     <div class="skill-tag"><i class="fab fa-react mr-2 text-blue-600"></i> React</div>
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
-                                    <div class="skill-tag"><i class="fa fa-snowflake mr-2 text-yellow-500"></i>
-                                        Coldfusion</div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
+                                    <div class="skill-tag"><i class="fa fa-snowflake mr-2 text-yellow-500"></i> Coldfusion</div>
                                 </div>
                             </div>
 
@@ -623,8 +684,7 @@
                                 <p class="text-sm mt-2">Pixel-perfect cross-browser psd to html, and JavaScript based
                                     shopping cart functionality, compatible in all browsers including IE 7,8,9.</p>
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
                                     <div class="skill-tag"><i class="fab fa-css3-alt mr-2 text-blue-500"></i> CSS</div>
                                 </div>
                             </div>
@@ -653,8 +713,8 @@
                     <section id="contact" class="mb-12" role="contentinfo" aria-label="Contact information">
                         <h3 class="font-semibold mb-4 highlight">Contact</h3>
                         <div class="px-4">
-                            <p class="">Please contact me via email.</p>
                             <a href="mailto:bryant@bryant-young.com" class="hover:text-highlight">bryant@bryant-young.com</a>
+                            <p class="text-xs mt-4">Please include "Resume" somewhere in the subject so it's less likely to be sent to spam.</p>
                         </div>
                     </section>
                 </div><!-- /panel-resume -->
@@ -683,15 +743,15 @@
                                     <li class="project-item">Making legacy shopping cart systems responsive and mobile compatible</li>
                                     <li class="project-item">Self-managed CMS buildouts for non-technical clients</li>
                                     <li class="project-item">Multiple OAuth API integrations</li>
-                                    <li class="project-item">Complete custom dashboards for various clients</li>
+                                    <li class="project-item">Cumulatively increased net sales by more than $1,000,000 for 2025 with API integrations</li>
                                 </ul>
                             </div>
 
                             <div class="project-entry">
                                 <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-2">
-                                    <strong class="text-yellow-400">clanorb.com <a href="https://clanorb.com" target="_blank"
-                                            rel="noopener noreferrer" class="text-xs ml-1"><i
-                                                class="fa-solid fa-arrow-up-right-from-square"></i></a></strong>
+                                    <strong class="text-yellow-400">
+                                        clanorb.com <a href="https://staging.clanorb.com" target="_blank" rel="noopener noreferrer" class="text-xs ml-1"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                    </strong>
                                     <span class="text-xs text-slate-400">SvelteKit · TypeScript</span>
                                 </div>
                                 <p class="text-xs  text-slate-300 mb-4">Personal website for an online gaming community, test bed and experimental coding sandbox.</p>
@@ -700,16 +760,16 @@
                                         <ul class="project-sub">
                                             <li>Battle.net Character/Guild Activity data via Profile API</li>
                                             <li>Complex data normalization, stored in PostgreSQL database</li>
-                                            <li>Local API abstraction to provide frontend data</li>
+                                            <li>Local API abstraction layer to provide frontend data</li>
                                             <li>Discord OAuth integration for user authentication</li>
                                             <li>Custom UDP packet parser for legacy master server display</li>
-                                            <li>News and event data aggregation from multiple sources</li>
+                                            <li>News and event data aggregation from multiple public REST/XML APIs</li>
                                             <li>API Cache handling layer to handle rate limiting and stale data</li>
                                         </ul>
                                     </li>
-                                    <li class="project-item">Self-hosted and configured ArchLinux web server through cloudflare proxy</li>
-                                    <li class="project-item">CI/CD pipeline setup based on Git hooks</li>
-                                </ul>
+                                    <li class="project-item">Self-hosted and configured ArchLinux web server through Cloudflare proxy, using Caddy </li>
+                                    <li class="project-item">CI/CD pipeline setup based on Git hooks, to replace existing Heroku-based server</li>
+                                 </ul>
                             </div>
 
                             <div class="project-entry">
@@ -747,23 +807,27 @@
                             <div class="recommendation-card">
                                 <strong class="text-yellow-400">William Mohler &middot; SVP Of Product Development at Voxtur</strong><br>
                                 <p class="text-xs text-slate-400">2023 &middot; Direct Manager</p>
-                                <p class="italic mt-2 text-sm">"I had the pleasure of managing Bryant at Clarocity,
+                                <p class="italic mt-2 text-sm">
+                                    "I had the pleasure of managing Bryant at Clarocity,
                                     where he served as a developer. He is a talented front-end developer, and is
                                     particularly skilled at creating exceptional user experiences. We had a small team
                                     and a complex codebase, and Bryant felt comfortable working anywhere in the stack. I
-                                    would consider Bryant for future development opportunities."</p>
+                                    would consider Bryant for future development opportunities."
+                                </p>
                             </div>
                             <div class="recommendation-card">
                                 <strong class="text-yellow-400">Ryan Elston &middot; Director of Technology at Lunchbox</strong><br>
                                 <p class="text-xs text-slate-400">2018 &middot; Direct Manager</p>
-                                <p class="italic mt-2 text-sm">"I want to recommend Bryant as one of my star developers
+                                <p class="italic mt-2 text-sm">
+                                    "I want to recommend Bryant as one of my star developers
                                     during my time at Lunchbox/Mirum. It has been a joy and pleasure to watch Bryant
                                     develop over the years. He is conscious and thoughtful about the needs of
                                     stakeholders in his implementations. He delivers on time and in full when clear
                                     expectations are set. He takes an active interest in learning from those around him
                                     and is patiently generous with his time in order to train others. All while having a
                                     smart and jovial sense of humor that makes him fun to be around. He would be an
-                                    asset to any front-end web team"</p>
+                                    asset to any front-end web team"
+                                </p>
                             </div>
 
                         </div>
@@ -779,18 +843,20 @@
                                 <p class="font-semibold text-yellow-400 mb-2">Are you open to full-time employment? [W2]</p>
                                 <p class="text-sm text-slate-300">
                                     Yes, I'm currently looking for full-time opportunities that are fully remote, hybrid, or on-site roles within the Northern San Diego / Southern California area.
+                                    I am a legal U.S. resident and do not require sponsorship or visa accomodations.
                                 </p>
                             </div>
                             <div class="faq-item">
                                 <p class="font-semibold text-yellow-400 mb-2">Are you available for freelance or contract work? [1099]</p>
                                 <p class="text-sm text-slate-300">
-                                    I prefer W2 work currently but will take on freelance and contract projects through <a href="https://www.dellaport.dev" target="_blank" rel="noreferrer noopener">Dellaport.dev</a>. Contract availability may be dependant on W2 status.
+                                    I currently prefer W2 work but will take on freelance and contract projects through <a href="https://www.dellaport.dev" target="_blank" rel="noreferrer noopener">Dellaport.dev</a>. Contract availability may be dependant on W2 status.
                                 </p>
                             </div>
                             <div class="faq-item">
                                 <p class="font-semibold text-yellow-400 mb-2">What's your preferred tech stack?</p>
                                 <p class="text-sm text-slate-300">
                                 My core strengths are CSS and JavaScript across Node and PHP environments, with intermediate hands-on experience in React and TypeScript. 
+                                I have worked in TypeScript only environments, but have not mastered the more complex use cases. 
                                 I have a strong foundational understanding of CSS, HTML/DOM, and the JavaScript engine.
                                 </p>
                             </div>
@@ -834,21 +900,17 @@
                                 <p class="text-sm text-slate-300">
                                     During my time in Los Angeles, I sought out roles that pushed my skillset at fast-moving companies. 
                                     These environments came with rapid growth but also volatility, acquisitions, and re-organizations. 
-                                    I was typically referred to new roles quickly.
-                                </p>
-                            </div>
-                            <div class="faq-item">
-                                <p class="font-semibold text-yellow-400 mb-2">How do I get in touch?</p>
-                                <p class="text-sm text-slate-300">
-                                    Email is best: <a href="mailto:bryant@bryant-young.com">bryant@bryant-young.com</a>.
-                                </p>
+                                    I was typically referred to new roles quickly.</p>
                             </div>
                         </div>
                     </section>
                 </div><!-- /panel-faq -->
-
             </div><!-- /panel-wrap -->
         </main>
+
+        <button id="width-toggle" aria-label="Toggle page width" class="group hidden lg:flex items-center justify-center absolute inset-y-0 right-0 w-2.5 z-20 cursor-pointer bg-transparent hover:bg-highlight/20 transition-colors print:hidden">
+            <i class="fa-solid fa-arrows-left-right text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        </button>
     </div>
 </body>
 
@@ -862,7 +924,9 @@
             window.print();
         });
 
-        document.querySelectorAll('.counter-years').forEach(el => el.textContent = new Date().getFullYear() - 2004);
+        document.getElementById('width-toggle').addEventListener('click', () => {
+            document.getElementById('layout').classList.toggle('max-w-screen-lg');
+        });        
 
         // Sections that live inside the resume panel — any hash matching these routes to resume first
         const resumeSectionIds = new Set(['skills', 'about-me', 'experience', 'contact']);
@@ -951,6 +1015,10 @@
 
         // Initial load
         handleHash();
+    });
+
+    window.addEventListener('load', () => {
+        if (typeof tailwind === 'undefined') document.documentElement.classList.add('no-tw');
     });
 </script>
 
