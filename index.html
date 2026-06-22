@@ -98,7 +98,10 @@
 
         ul.square-bullets { list-style-type: square; }
         .square-bullets li { position: relative; }
-        .max-w-screen-lg #skills .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+        #skills .grid {
+            grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+        }
 
         section::before {
             content: "";
@@ -435,7 +438,7 @@
                 <div class="panel" id="panel-resume">
                     <section id="skills" class="mb-12 mt-0 sm:mt-4">
                         <h3 class="font-semibold mb-4 highlight">Relevant Skills</h3>
-                        <div class="text-sm grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-6 text-slate-300 mx-4">
+                        <div class="text-sm grid gap-4 lg:gap-6 text-slate-300 mx-4">
                             <div>
                                 <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-js-square mr-2"></i> JavaScript</p>
                                 <ul class="list-inside list-none">
@@ -909,7 +912,7 @@
         </main>
 
         <button id="width-toggle" aria-label="Toggle page width" class="group hidden lg:flex items-center justify-center absolute inset-y-0 right-0 w-2.5 z-20 cursor-pointer bg-transparent hover:bg-highlight/20 transition-colors print:hidden">
-            <i class="fa-solid fa-arrows-left-right text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            <i class="fa-solid fa-arrows-left-right fixed top-1/2 -translate-y-1/2 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
         </button>
     </div>
 </body>
