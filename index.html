@@ -316,12 +316,34 @@
         .no-tw .gradient-text,
         .no-tw nav,
         .no-tw #theme-toggle,
-        .no-tw #width-toggle {
+        .no-tw #width-toggle,
+        .no-tw #print {
             display:none;
+        }
+
+        .no-tw aside a {
+            display:block;
+        }
+
+        .no-tw h1 {
+            margin:0.5rem 0;
+        }
+
+        .no-tw h2 {
+            margin: 0.5rem 0;
+        }
+        .no-tw h2 br { display:none; }
+
+        .no-tw aside p {
+            margin:5px 0;
         }
 
         .no-tw .font-semibold{
             font-weight: 600;
+        }
+
+        .no-tw .exp-entry p {
+            margin:3px 0;
         }
 
         .no-tw .skill-tag {
@@ -329,9 +351,32 @@
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
             font-size: 0.75rem;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+            margin-top:0;
         }
+
+        .no-tw section {
+            border-bottom: 1px solid #666;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .no-tw section:last-child {
+            border-bottom: none;
+        }  
+        
+        @media print {
+            .no-tw body { font-size: 12px; }
+
+            .no-tw #contact { display:none; }
+
+            .no-tw section {
+                break-after: page;
+                break-inside: avoid;
+                border-bottom:0;
+            }
+        }        
     </style>
 
 
