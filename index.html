@@ -318,8 +318,9 @@
         .no-tw nav,
         .no-tw #theme-toggle,
         .no-tw #width-toggle,
-        .no-tw #print {
-            display:none;
+        .no-tw #print,
+        .no-tw .panel-tabs-bar {
+            display:none !important;
         }
 
         .no-tw aside a {
@@ -366,6 +367,15 @@
         .no-tw section:last-child {
             border-bottom: none;
         }  
+
+        .no-tw .flex { display: flex; }
+        .no-tw .flex-col { flex-direction: column; }
+        .no-tw .flex-wrap { flex-wrap: wrap; }
+        .no-tw .items-center { align-items: center; }
+        .no-tw .items-stretch { align-items: stretch; }
+        .no-tw .justify-between { justify-content: space-between; }
+        .no-tw .justify-center { justify-content: center; }
+        .no-tw .flex-1 { flex: 1 1 0%; }
         
         @media print {
             .no-tw body { font-size: 12px; }
@@ -775,7 +785,7 @@
 
                 <div class="panel panel-hidden" id="panel-examples">
                     <section id="examples" class="mb-12">
-                        <h3 class="font-semibold mb-4 highlight">Project Highlights</h3>
+                        <h3 class="font-semibold mb-4 highlight">Examples and Project Highlights</h3>
                         <div class="px-4 space-y-8">
 
                             <div class="project-entry">
@@ -796,7 +806,7 @@
                                     <li class="project-item">Custom WordPress plugin development and long-term maintenance</li>
                                     <li class="project-item">Making legacy shopping cart systems responsive and mobile compatible</li>
                                     <li class="project-item">Self-managed CMS buildouts for non-technical clients</li>
-                                    <li class="project-item">Multiple OAuth API integrations</li>
+                                    <li class="project-item">Multiple OAuth API integrations, like Constant Contact</li>
                                     <li class="project-item">Cumulatively increased net sales by more than $1,000,000 for 2025 with API integrations</li>
                                 </ul>
                             </div>
