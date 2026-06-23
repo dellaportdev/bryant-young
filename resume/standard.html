@@ -25,13 +25,6 @@
             },
         };
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <link rel="preconnect" href="https://rsms.me/">
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-
 
     <style type="text/tailwindcss">
         :root {
@@ -437,6 +430,24 @@
     </style>
 
     <style>
+
+        .fa-solid,
+        .fa-regular,
+        .fa-brands,
+        .fab,
+        .fas,
+        .far {
+            font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands', sans-serif;
+        }
+
+        .fa-solid::before,
+        .fa-regular::before,
+        .fa-brands::before,
+        .fab::before,
+        .fas::before,
+        .far::before {
+            content: "\2022";
+        }        
         /* Fallback applied only when Tailwind fails to load */
         .no-tw body {
             max-width: 60rem;
@@ -553,6 +564,13 @@
             }
         }
     </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 </head>
 
 <body class="bg-slate-900 text-slate-300 antialiased overflow-x-hidden">
