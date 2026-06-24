@@ -19,11 +19,21 @@
 }
 
 body {
-    background:
-        radial-gradient(900px circle at 15% 15%, rgb(var(--highlight-rgb) / 0.12), transparent 45%),
-        radial-gradient(circle at bottom right, var(--bg-from), var(--bg-to)) fixed;
-    background-attachment: fixed;
+    
     text-shadow: 1px 1px 1px var(--shadow-color);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0px;
+    z-index: -2;
+    background-image: url('./images/TronLegacy-70.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center calc(50% - 100px);
+    filter: blur(4px);
+    opacity: 0.22;
 }
 
 a:hover {

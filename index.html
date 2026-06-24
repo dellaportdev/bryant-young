@@ -36,9 +36,9 @@
 <body class="bg-slate-900 text-slate-300 antialiased overflow-x-hidden min-h-screen flex flex-col">
     <canvas id="matrix"></canvas>
 
-    <main class="relative z-10 flex-1 flex items-center justify-center px-6 py-16" role="main">
+    <main class="relative z-10 min-h-screen flex items-center justify-center px-6 py-16" role="main">
         <div class="card max-w-lg w-full text-center">
-            <div class="rounded-lg border border-white/10 bg-slate-900/40 px-6 py-8 sm:px-10 mt-6">
+            <div class="rounded-lg border border-white/10 bg-slate-900/80 shadow-2xl shadow-black/50 px-6 py-8 sm:px-10 mt-6">
                 <div class="gradient-text mb-4">
                     <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.15] py-1"
                         aria-label="Bryant Young">Bryant Young</h1>
@@ -60,9 +60,7 @@
         </div>
     </main>
 
-    <svg class="waves relative z-10 w-full h-32 sm:h-40 opacity-60 mt-auto" xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 12 150 40" preserveAspectRatio="none"
-        shape-rendering="auto">
+    <svg class="waves fixed bottom-0 left-0 z-0 w-full h-32 sm:h-40 opacity-60 pointer-events-none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 12 150 40" preserveAspectRatio="none" shape-rendering="auto">
         <defs>
             <path id="wave" d="M-160 44c30 0 58-28 88-28s 58 28 88 28 58-28 88-28 58 28 88 28 v44h-352z" />
         </defs>
