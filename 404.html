@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found</title>
+    <meta name="theme-color" content="#0a192f">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="./site.webmanifest">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        highlight: 'rgb(var(--highlight-rgb) / <alpha-value>)',
+                        contrast: 'rgb(var(--contrast-rgb) / <alpha-value>)',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+    <link rel="stylesheet" href="./stylesheet.css">
+
+    <style>
+        body::before{
+            background-image: url('./images/TronLegacy-7.jpeg');
+            background-position: 50% 50%;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-slate-300 antialiased overflow-x-hidden min-h-screen flex flex-col">
+    <canvas id="matrix"></canvas>
+
+    <main class="relative z-10 min-h-screen flex items-center justify-center px-6 py-16" role="main">
+        <div class="card max-w-lg w-full text-center">
+            <div
+                class="rounded-lg border border-white/10 bg-slate-900/50 shadow-2xl shadow-black/50 px-6 py-8 sm:px-10 mt-6">
+                <div class="gradient-text mb-2">
+                    <h1 class="text-7xl sm:text-8xl font-bold tracking-tight leading-[1.15] py-1" aria-label="404">404
+                    </h1>
+                </div>
+
+                <p class="text-lg font-medium text-white [text-shadow:1px_1px_2px_#000] mb-2">This page doesn't exist.
+                </p>
+                <p class="text-slate-300 mb-8"></p>
+
+                <a href="/"
+                    class="inline-flex items-center gap-2 text-white font-semibold [text-shadow:1px_1px_2px_#000] transition-colors">
+                    <i class="fa-solid fa-arrow-left text-highlight"></i>
+                    Back home
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <svg class="waves fixed bottom-0 left-0 z-0 w-full h-32 sm:h-40 opacity-60 pointer-events-none"
+        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 12 150 40"
+        preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+            <path id="wave" d="M-160 44c30 0 58-28 88-28s 58 28 88 28 58-28 88-28 58 28 88 28 v44h-352z" />
+        </defs>
+        <g class="parallax">
+            <use xlink:href="#wave" x="48" y="-4" fill="rgb(var(--highlight-rgb) / 0.35)" />
+            <use xlink:href="#wave" x="48" y="1" fill="rgba(255,255,255,0.4)" />
+            <use xlink:href="#wave" x="48" y="5" fill="rgba(255,255,255,0.25)" />
+            <use xlink:href="#wave" x="48" y="9" fill="#fff" />
+        </g>
+    </svg>
+
+    <script src="./matrix-rain.js"></script>
+</body>
+
+</html>
