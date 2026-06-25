@@ -4,14 +4,24 @@
     const ctx = canvas.getContext('2d');
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const FONT_SIZE = 13;
+    const FONT_SIZE = 18;
     const TRAIL = 16;
-    const MIN_SPEED = 0.03;
-    const MAX_SPEED = 0.12;
+    const MIN_SPEED = 0.05;
+    const MAX_SPEED = 0.212;
     const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈ0123456789'.split('');
 
     const COLLISION_TARGET = 'main > .card';
     const COLLISION_OFFSET = 25;
+
+    const WATER_BAND = 120;
+    const WATER_AMP = 6;
+    const WATER_WAVELENGTH = 220;
+    const WATER_SPEED = 0.6;
+    const WATER_JITTER_MIN = 1;
+    const WATER_JITTER_MAX = 20;
+
+    const CURSOR_RADIUS = 10;
+
     const SPLASH_COUNT = 9;
     const SPLASH_GRAVITY = 0.14;
     const MAX_PARTICLES = 800;
@@ -37,6 +47,7 @@
     let particles = [];
     let cardEl = null;
     let cardBox = null;
+    let mouseX = 0, mouseY = 0, mouseActive = false;
 
     function rand(min, max) { return min + Math.random() * (max - min); }
     function glyph() { return GLYPHS[(Math.random() * GLYPHS.length) | 0]; }
@@ -60,6 +71,13 @@
         col.chars.length = 0;
     }
 
+    function spawnColumn(col, top) {
+        col.y = top ? rand(-20, -2) : rand(-H * 4, 0) / FONT_SIZE;
+        col.speed = rand(MIN_SPEED, MAX_SPEED);
+        col.lastRow = Math.floor(col.y) - 1;
+        col.waterJitter = rand(WATER_JITTER_MIN, WATER_JITTER_MAX);
+    }
+
     function init() {
         dpr = Math.min(window.devicePixelRatio || 1, 2);
         W = window.innerWidth;
@@ -76,15 +94,9 @@
         rows = Math.ceil(H / FONT_SIZE);
         columns = new Array(cols);
         for (let c = 0; c < cols; c++) {
-            columns[c] = {
-                y: rand(-H * 4, 0) / FONT_SIZE,
-                speed: rand(MIN_SPEED, MAX_SPEED),
-                lastRow: -1,
-                head: -1,
-                chars: [],
-                resting: false,
-                wait: 0
-            };
+            const col = { head: -1, chars: [], resting: false, wait: 0 };
+            spawnColumn(col, false);
+            columns[c] = col;
         }
 
         buildGlow();
@@ -95,6 +107,10 @@
         if (!cardEl) { cardBox = null; return; }
         const r = cardEl.getBoundingClientRect();
         cardBox = { x1: r.left, x2: r.right, y: r.top + COLLISION_OFFSET };
+    }
+
+    function waterAt(x, t) {
+        return (H - WATER_BAND) + Math.sin((x / WATER_WAVELENGTH) * Math.PI * 2 + t * WATER_SPEED) * WATER_AMP;
     }
 
     function spawnSplash(x, y) {
@@ -112,7 +128,7 @@
         }
     }
 
-    function update(dt) {
+    function update(dt, t) {
         updateCardBox();
 
         for (let c = 0; c < cols; c++) {
@@ -122,9 +138,7 @@
                 col.wait -= dt;
                 if (col.wait <= 0) {
                     col.resting = false;
-                    col.y = rand(-20, -2);
-                    col.speed = rand(MIN_SPEED, MAX_SPEED);
-                    col.lastRow = Math.floor(col.y) - 1;
+                    spawnColumn(col, true);
                 }
                 continue;
             }
@@ -139,19 +153,32 @@
                 col.lastRow++;
             }
 
-            if (cardBox) {
-                const cx = c * FONT_SIZE + FONT_SIZE * 0.5;
-                const hy = col.y * FONT_SIZE;
-                if (cx >= cardBox.x1 && cx <= cardBox.x2 && hy >= cardBox.y) {
-                    spawnSplash(cx, cardBox.y);
+            const cx = c * FONT_SIZE + FONT_SIZE * 0.5;
+            const hy = col.y * FONT_SIZE;
+
+            if (mouseActive) {
+                const ddx = cx - mouseX, ddy = hy - mouseY;
+                if (ddx * ddx + ddy * ddy <= CURSOR_RADIUS * CURSOR_RADIUS) {
+                    spawnSplash(cx, hy);
                     restColumn(col);
                     continue;
                 }
             }
 
-            if ((head - col.chars.length) * FONT_SIZE > H) {
+            if (cardBox && cx >= cardBox.x1 && cx <= cardBox.x2 && hy >= cardBox.y) {
+                spawnSplash(cx, cardBox.y);
                 restColumn(col);
+                continue;
             }
+
+            const surf = waterAt(cx, t) + col.waterJitter;
+            if (hy >= surf) {
+                spawnSplash(cx, surf);
+                restColumn(col);
+                continue;
+            }
+
+            if (hy > H) restColumn(col);
         }
 
         for (let i = particles.length - 1; i >= 0; i--) {
@@ -212,12 +239,14 @@
         let dt = (now - last) / 16.6667;
         last = now;
         if (dt > 3) dt = 3;
-        update(dt);
+        update(dt, now / 1000);
         render();
         requestAnimationFrame(frame);
     }
 
     init();
     window.addEventListener('resize', init);
+    window.addEventListener('pointermove', e => { mouseX = e.clientX; mouseY = e.clientY; mouseActive = true; });
+    window.addEventListener('pointerout', e => { if (!e.relatedTarget) mouseActive = false; });
     if (!reduce) requestAnimationFrame(frame);
 })();
