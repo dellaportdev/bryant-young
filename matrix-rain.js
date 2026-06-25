@@ -4,7 +4,7 @@
     const ctx = canvas.getContext('2d');
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const FONT_SIZE = 18;
+    const FONT_SIZE = 17;
     const TRAIL = 16;
     const MIN_SPEED = 0.05;
     const MAX_SPEED = 0.212;
@@ -21,6 +21,9 @@
     const WATER_JITTER_MAX = 20;
 
     const CURSOR_RADIUS = 10;
+
+    const SPAWN_INTERVAL = 22;
+    const SPAWN_SAME_COL_GUARD = 120;
 
     const SPLASH_COUNT = 9;
     const SPLASH_GRAVITY = 0.14;
@@ -94,7 +97,7 @@
         rows = Math.ceil(H / FONT_SIZE);
         columns = new Array(cols);
         for (let c = 0; c < cols; c++) {
-            const col = { head: -1, chars: [], resting: false, wait: 0 };
+            const col = { head: -1, chars: [], resting: false, wait: 0, immune: 0 };
             spawnColumn(col, false);
             columns[c] = col;
         }
@@ -106,7 +109,7 @@
     function updateCardBox() {
         if (!cardEl) { cardBox = null; return; }
         const r = cardEl.getBoundingClientRect();
-        cardBox = { x1: r.left, x2: r.right, y: r.top + COLLISION_OFFSET };
+        cardBox = { x1: r.left, x2: r.right, y1: r.top + COLLISION_OFFSET, y2: r.bottom };
     }
 
     function waterAt(x, t) {
@@ -146,6 +149,7 @@
             col.y += col.speed * dt;
             const head = Math.floor(col.y);
             col.head = head;
+            if (col.immune > 0) col.immune -= dt;
 
             while (col.lastRow < head) {
                 col.chars.unshift(glyph());
@@ -156,7 +160,7 @@
             const cx = c * FONT_SIZE + FONT_SIZE * 0.5;
             const hy = col.y * FONT_SIZE;
 
-            if (mouseActive) {
+            if (mouseActive && col.immune <= 0) {
                 const ddx = cx - mouseX, ddy = hy - mouseY;
                 if (ddx * ddx + ddy * ddy <= CURSOR_RADIUS * CURSOR_RADIUS) {
                     spawnSplash(cx, hy);
@@ -165,8 +169,8 @@
                 }
             }
 
-            if (cardBox && cx >= cardBox.x1 && cx <= cardBox.x2 && hy >= cardBox.y) {
-                spawnSplash(cx, cardBox.y);
+            if (cardBox && cx >= cardBox.x1 && cx <= cardBox.x2 && hy >= cardBox.y1 && hy <= cardBox.y2) {
+                spawnSplash(cx, hy);
                 restColumn(col);
                 continue;
             }
@@ -244,9 +248,49 @@
         requestAnimationFrame(frame);
     }
 
+    function spawnAt(px, py) {
+        const c = Math.floor(px / FONT_SIZE);
+        if (c < 0 || c >= cols) return;
+        const col = columns[c];
+        col.resting = false;
+        col.y = py / FONT_SIZE;
+        col.speed = rand(MIN_SPEED, MAX_SPEED);
+        col.lastRow = Math.floor(col.y) - 1;
+        col.chars.length = 0;
+        col.waterJitter = rand(WATER_JITTER_MIN, WATER_JITTER_MAX);
+        col.immune = CURSOR_RADIUS / (col.speed * FONT_SIZE) + 20;
+    }
+
+    let pressed = false;
+    let lastSpawnTime = 0;
+    let lastSpawnCol = -1;
+
+    function tryDragSpawn(x, y) {
+        const now = performance.now();
+        const c = Math.floor(x / FONT_SIZE);
+        if (now - lastSpawnTime < SPAWN_INTERVAL) return;
+        if (c === lastSpawnCol && now - lastSpawnTime < SPAWN_SAME_COL_GUARD) return;
+        spawnAt(x, y);
+        lastSpawnTime = now;
+        lastSpawnCol = c;
+    }
+
     init();
     window.addEventListener('resize', init);
-    window.addEventListener('pointermove', e => { mouseX = e.clientX; mouseY = e.clientY; mouseActive = true; });
+    window.addEventListener('pointermove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        mouseActive = true;
+        if (pressed) tryDragSpawn(e.clientX, e.clientY);
+    });
     window.addEventListener('pointerout', e => { if (!e.relatedTarget) mouseActive = false; });
+    window.addEventListener('pointerdown', e => {
+        pressed = true;
+        spawnAt(e.clientX, e.clientY);
+        lastSpawnTime = performance.now();
+        lastSpawnCol = Math.floor(e.clientX / FONT_SIZE);
+    });
+    window.addEventListener('pointerup', () => { pressed = false; });
+    window.addEventListener('pointercancel', () => { pressed = false; });
     if (!reduce) requestAnimationFrame(frame);
 })();

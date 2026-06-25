@@ -49,6 +49,31 @@ a:hover {
     z-index: -1;
 }
 
+.term-row {
+    position: relative;
+    padding-left: 1rem;
+}
+
+.term-row::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: rgb(var(--highlight-rgb));
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.term-row:hover::before {
+    opacity: 1;
+    animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
 @supports (background-clip: text) {
     .gradient-text h1 {
         position: relative;
