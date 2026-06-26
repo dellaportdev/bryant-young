@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
@@ -14,7 +14,7 @@
     <title>Bryant Young Resume</title>
 
     <script data-goatcounter="https://bryantyoung.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -433,6 +433,7 @@
     </style>
 
     <style>
+
         .fa-solid,
         .fa-regular,
         .fa-brands,
@@ -449,8 +450,7 @@
         .fas::before,
         .far::before {
             content: "\2022";
-        }
-
+        }        
         /* Fallback applied only when Tailwind fails to load */
         .no-tw body {
             max-width: 60rem;
@@ -544,47 +544,22 @@
         }
 
         /* Flex utility fallbacks */
-        .no-tw .flex {
-            display: flex;
-        }
-
-        .no-tw .flex-col {
-            flex-direction: column;
-        }
-
-        .no-tw .flex-wrap {
-            flex-wrap: wrap;
-        }
-
-        .no-tw .items-center {
-            align-items: center;
-        }
-
-        .no-tw .items-stretch {
-            align-items: stretch;
-        }
-
-        .no-tw .justify-between {
-            justify-content: space-between;
-        }
-
-        .no-tw .justify-center {
-            justify-content: center;
-        }
-
-        .no-tw .flex-1 {
-            flex: 1 1 0%;
-        }
+        .no-tw .flex { display: flex; }
+        .no-tw .flex-col { flex-direction: column; }
+        .no-tw .flex-wrap { flex-wrap: wrap; }
+        .no-tw .items-center { align-items: center; }
+        .no-tw .items-stretch { align-items: stretch; }
+        .no-tw .justify-between { justify-content: space-between; }
+        .no-tw .justify-center { justify-content: center; }
+        .no-tw .flex-1 { flex: 1 1 0%; }
 
         @media print {
             .no-tw body {
                 font-size: 12px;
             }
-
             .no-tw #contact {
                 display: none;
             }
-
             .no-tw section {
                 border-bottom: 0;
                 break-after: page;
@@ -596,15 +571,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 </head>
 
 <body class="bg-slate-900 text-slate-300 antialiased overflow-x-hidden">
     <div id="layout" class="relative w-full max-w-screen-lg flex flex-col lg:flex-row mx-auto md:px-6 h-full">
-        <aside class="p-4 sm:p-8 w-full lg:w-1/3 flex flex-col justify-start lg:sticky lg:top-0 lg:h-screen"
-            role="complementary" aria-label="Sidebar with navigation">
+        <aside class="p-4 sm:p-8 w-full lg:w-1/3 flex flex-col justify-start lg:sticky lg:top-0 lg:h-screen" role="complementary" aria-label="Sidebar with navigation">
 
             <div class="gradient-text print:hidden">
                 <h1 class="text-5xl font-bold tracking-tight sm:text-7xl pb-2" aria-label="Bryant Young">
@@ -612,56 +586,47 @@
                 </h1>
             </div>
 
-            <h1 class="print text-5xl font-bold tracking-tight sm:text-6xl mt-0 pt-0"
-                aria-label="Bryant Young (printable header)">
+            <h1 class="print text-5xl font-bold tracking-tight sm:text-6xl mt-0 pt-0" aria-label="Bryant Young (printable header)">
                 Bryant Young
             </h1>
 
             <h2 class="mt-3 text-lg font-medium tracking-tight text-slate-300 sm:text-xl">
                 Front-end/Full Stack
-                <br class="hidden md:block">
+                <br class="hidden md:block"> 
                 Software Engineer
             </h2>
 
             <p class="mt-0.5 text-sm uppercase text-slate-500">
                 San Diego, CA &middot; Remote &middot; Hybrid
             </p>
-
+            
             <p class="mt-0.5 text-xs text-slate-500">
                 U.S. Citizen / Resident
             </p>
 
             <p class="mt-2 lg:mt-6 lg:max-w-xs leading-normal">
-                22 years experience building responsive, API-connected PHP and JavaScript web applications with a
-                strength in front-end UI/UX and CSS.
+                22 years experience building responsive, API-connected PHP and JavaScript web applications with a strength in front-end UI/UX and CSS.
             </p>
 
             <nav class="mt-6 lg:mt-14 center hidden lg:block" role="navigation" aria-label="Main navigation">
                 <ul class="leading-6">
                     <li><a href="#skills" data-link="skills"><i class="fas fa-tools mr-2"></i>Relevant Skills</a></li>
                     <li><a href="#about-me" data-link="about-me"><i class="fas fa-user mr-2"></i>About Me</a></li>
-                    <li><a href="#work-history" data-link="work-history"><i class="fas fa-briefcase mr-2"></i>Work
-                            History</a></li>
-                    <li><a href="#examples" data-link="examples" data-tab="examples"><i
-                                class="fas fa-laptop-code mr-2"></i>Examples</a></li>
-                    <li><a href="#recommendations" data-link="recommendations" data-tab="recommendations"><i
-                                class="fas fa-comment-dots mr-2"></i>Recommendations</a></li>
-                    <li><a href="#faq" data-link="faq" data-tab="faq"><i class="fas fa-question-circle mr-2"></i>FAQ</a>
-                    </li>
+                    <li><a href="#work-history" data-link="work-history"><i class="fas fa-briefcase mr-2"></i>Work History</a></li>
+                    <li><a href="#examples" data-link="examples" data-tab="examples"><i class="fas fa-laptop-code mr-2"></i>Examples</a></li>
+                    <li><a href="#recommendations" data-link="recommendations" data-tab="recommendations"><i class="fas fa-comment-dots mr-2"></i>Recommendations</a></li>
+                    <li><a href="#faq" data-link="faq" data-tab="faq"><i class="fas fa-question-circle mr-2"></i>FAQ</a></li>
                 </ul>
             </nav>
 
-            <div class="out mt-6 lg:mt-auto lg:pt-12 text-5xl lg:text-4xl print:text-xs relative z-10 lg:text-center"
-                aria-label="Contact and social links">
+            <div class="out mt-6 lg:mt-auto lg:pt-12 text-5xl lg:text-4xl print:text-xs relative z-10 lg:text-center" aria-label="Contact and social links">
 
-                <a href="mailto:bryant@bryant-young.com" aria-label="Website for Bryant" class="print" target="_blank"
-                    rel="noreferrer noopener">
+                <a href="mailto:bryant@bryant-young.com" aria-label="Website for Bryant" class="print" target="_blank" rel="noreferrer noopener">
                     <i class="fa-solid fa-globe"></i>
                     <span class="link-text"><strong>Online Resume:</strong> https://www.bryant-young.com</span>
                 </a>
 
-                <a href="https://www.linkedin.com/in/bryantyoung/" class="relative group z-10"
-                    aria-label="Bryant's LinkedIn profile" target="_blank" rel="noreferrer noopener">
+                <a href="https://www.linkedin.com/in/bryantyoung/" class="relative group z-10" aria-label="Bryant's LinkedIn profile" target="_blank" rel="noreferrer noopener">
                     <i class="fa-brands fa-linkedin"></i>
                     <span class="link-text"><strong>LinkedIn:</strong> https://www.linkedin.com/in/bryantyoung/</span>
                 </a>
@@ -670,17 +635,13 @@
                     <i class="fa-solid fa-file-pdf"></i>
                 </button>
 
-                <button id="theme-toggle" class="print:hidden relative group z-10 text-white"
-                    aria-label="Toggle Dark Mode">
+                <button id="theme-toggle" class="print:hidden relative group z-10 text-white" aria-label="Toggle Dark Mode">
                     <i class="fa-solid fa-moon"></i>
                 </button>
 
-                <a href="mailto:bryant@bryant-young.com"
-                    class="float-right inline-block mt-3 ml-4 lg:float-none print:float-none lg:block lg:mt-4 lg:ml-0 text-base lg:text-sm text-white [text-shadow:1px_1px_2px_#000] z-10 print:hidden">bryant@bryant-young.com</a>
+                <a href="mailto:bryant@bryant-young.com" class="float-right inline-block mt-3 ml-4 lg:float-none print:float-none lg:block lg:mt-4 lg:ml-0 text-base lg:text-sm text-white [text-shadow:1px_1px_2px_#000] z-10 print:hidden">bryant@bryant-young.com</a>
 
-                <svg class="waves print:hidden lg:w-auto lg:block hidden opacity-50 -mt-8 lg:-mt-16"
-                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28"
-                    preserveAspectRatio="none" shape-rendering="auto">
+                <svg class="waves print:hidden lg:w-auto lg:block hidden opacity-50 -mt-8 lg:-mt-16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
                     <defs>
                         <path id="wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
                     </defs>
@@ -696,24 +657,11 @@
 
         <main class="p-4 pb-0 sm:p-8 w-full lg:w-2/3 overflow-y-auto pt-4 sm:pt-2 relative" role="main">
 
-            <div
-                class="panel-tabs-bar -mt-2 sm:mt-4 flex items-stretch sm:items-center sm:flex-wrap gap-1.5 mb-6 print:hidden">
-                <button
-                    class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0"
-                    data-panel="resume"><i class="fas fa-file-alt text-2xl sm:text-lg"></i><span
-                        class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Resume</span></button>
-                <button
-                    class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0"
-                    data-panel="examples"><i class="fas fa-laptop-code text-2xl sm:text-lg"></i><span
-                        class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Examples</span></button>
-                <button
-                    class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0"
-                    data-panel="recommendations"><i class="fas fa-comment-dots text-2xl sm:text-lg"></i><span
-                        class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Recommendations</span></button>
-                <button
-                    class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0"
-                    data-panel="faq"><i class="fas fa-question-circle text-2xl sm:text-lg"></i><span
-                        class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">FAQ</span></button>
+            <div class="panel-tabs-bar -mt-2 sm:mt-4 flex items-stretch sm:items-center sm:flex-wrap gap-1.5 mb-6 print:hidden">
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="resume"><i class="fas fa-file-alt text-2xl sm:text-lg"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Resume</span></button>
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="examples"><i class="fas fa-laptop-code text-2xl sm:text-lg"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Examples</span></button>
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="recommendations"><i class="fas fa-comment-dots text-2xl sm:text-lg"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">Recommendations</span></button>
+                <button class="panel-tab flex flex-col sm:flex-row items-center justify-center flex-1 sm:flex-none gap-1 sm:gap-0" data-panel="faq"><i class="fas fa-question-circle text-2xl sm:text-lg"></i><span class="text-[0.65rem] leading-none sm:text-xs sm:ml-2">FAQ</span></button>
             </div>
 
             <div class="panel-wrap">
@@ -722,8 +670,7 @@
                         <h3 class="font-semibold mb-4 highlight">Relevant Skills</h3>
                         <div class="text-sm grid gap-4 lg:gap-6 text-slate-300 mx-4">
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-css3-alt mr-2"></i> CSS
-                                    &middot; Design</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-css3-alt mr-2"></i> CSS &middot; Design</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-mobile-alt mr-2"></i>Mobile-First</li>
                                     <li><i class="fas fa-arrows-alt mr-2"></i>Responsive Design</li>
@@ -751,8 +698,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-js-square mr-2"></i>
-                                    JavaScript</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fab fa-js-square mr-2"></i> JavaScript</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fab fa-react mr-2"></i>React &middot; SvelteKit</li>
                                     <li><i class="fab fa-js-square mr-2"></i>TypeScript</li>
@@ -762,8 +708,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-user-friends mr-2"></i> Soft
-                                    Skills</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-user-friends mr-2"></i> Soft Skills</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-chalkboard-teacher mr-2"></i>Mentoring Jr. Devs</li>
                                     <li><i class="fas fa-tasks mr-2"></i>Project Ownership</li>
@@ -771,8 +716,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-project-diagram mr-2"></i>
-                                    Project Workflow</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-project-diagram mr-2"></i> Project Workflow</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-tasks mr-2"></i>Agile &middot; Scrum</li>
                                     <li><i class="fas fa-project-diagram mr-2"></i>JIRA &middot; Confluence</li>
@@ -780,8 +724,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-database mr-2"></i> Database
-                                </p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-database mr-2"></i> Database</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-database mr-2"></i>MySQL</li>
                                     <li><i class="fas fa-database mr-2"></i>MSSQL</li>
@@ -790,8 +733,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-tools mr-2"></i> Dev Tools
-                                </p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-tools mr-2"></i> Dev Tools</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fas fa-wrench mr-2"></i>Vite &middot; Grunt &middot; Gulp</li>
                                     <li><i class="fas fa-check mr-2"></i>Linting</li>
@@ -800,8 +742,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-sync-alt mr-2"></i> CI
-                                    &middot; CD</p>
+                                <p class="font-bold mb-2 text-yellow-400"><i class="fas fa-sync-alt mr-2"></i> CI &middot; CD</p>
                                 <ul class="list-inside list-none">
                                     <li><i class="fab fa-jenkins mr-2"></i>Jenkins</li>
                                     <li><i class="fab fa-gitlab mr-2"></i>Gitlab</li>
@@ -822,25 +763,16 @@
                             <li>Remote full-time since 2020 from a dedicated home office.</li>
                         </ul>
                         <p class="mt-6 px-4 text-sm print:text-md">
-                            Much of my experience is from building front-end interfaces for API-connected applications
-                            and the backend to support them.
-                            While my strengths are in front-end and UI/UX, I have extensive experience working with
-                            back-end APIs, microservices, and relational databases.
-                            Some examples of work I enjoy include: building complex interfaces and dashboards,
-                            recreating UI from another medium to a website or app, modernizing legacy systems, and
-                            transforming data from multiple APIs into improved and more functional interfaces.
+                            Much of my experience is from building front-end interfaces for API-connected applications and the backend to support them. 
+                            While my strengths are in front-end and UI/UX, I have extensive experience working with back-end APIs, microservices, and relational databases.
+                            Some examples of work I enjoy include: building complex interfaces and dashboards, recreating UI from another medium to a website or app, modernizing legacy systems, and transforming data from multiple APIs into improved and more functional interfaces.
                             <br><br>
-                            I'm a flexible developer and can adapt to new languages, frameworks, or workflows as needed.
-                            As part of a team, I like to be positive, helpful, approachable, and easy to communicate
-                            with, especially with non-technical coworkers.
+                            I'm a flexible developer and can adapt to new languages, frameworks, or workflows as needed. 
+                            As part of a team, I like to be positive, helpful, approachable, and easy to communicate with, especially with non-technical coworkers. 
                             <br><br>
-                            I learn best by doing; I seek out opportunities which allow me to use what I know while also
-                            exposing me to something new.
-                            Some example technologies I'd like to get experience working with in the future include:
-                            Next.js, GraphQL, Go/Rust, three.js, more complex uses of TypeScript as well as state
-                            management and unit testing.
-                            Opportunities that overlap with some of my other interests, such as photography, cars,
-                            travel, or online gaming are always a plus.
+                            I learn best by doing; I seek out opportunities which allow me to use what I know while also exposing me to something new. 
+                            Some example technologies I'd like to get experience working with in the future include: Next.js, GraphQL, Go/Rust, three.js, more complex uses of TypeScript as well as state management and unit testing.
+                            Opportunities that overlap with some of my other interests, such as photography, cars, travel, or online gaming are always a plus.
                         </p>
                     </section>
 
@@ -850,10 +782,8 @@
                             <div class="exp-entry">
                                 <div class="flex flex-col">
                                     <strong class="block text-lg font-medium">
-                                        <a class="block sm:inline text-yellow-400" target="_blank"
-                                            rel="noopener noreferrer" aria-label="Opens in a new window"
-                                            href="https://www.dellaport.dev">
-                                            Dellaport.dev
+                                        <a class="block sm:inline text-yellow-400" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new window" href="https://www.dellaport.dev">
+                                            Dellaport.dev 
                                             <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i>
                                         </a>
                                         <span class="hidden sm:inline">&middot;</span> Freelance Development
@@ -868,8 +798,7 @@
                                     custom PHP plugins for The Village News.</p>
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
                                     <div class="skill-tag"><i class="fab fa-php mr-2 text-blue-600"></i> PHP</div>
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
                                     <div class="skill-tag"><i class="fas fa-code mr-2"></i> API</div>
                                 </div>
                             </div>
@@ -877,10 +806,8 @@
                             <div class="exp-entry">
                                 <div class="flex flex-col">
                                     <strong class="block text-lg font-medium">
-                                        <a class="block sm:inline text-yellow-400" target="_blank"
-                                            rel="noopener noreferrer" aria-label="Opens in a new window"
-                                            href="https://www.voxtur.com">
-                                            Voxtur (Clarocity Inc)
+                                        <a class="block sm:inline text-yellow-400" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new window" href="https://www.voxtur.com">
+                                            Voxtur (Clarocity Inc) 
                                             <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i>
                                         </a>
                                         <span class="hidden sm:inline">&middot;</span> Full Stack Software Engineer
@@ -897,8 +824,7 @@
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
                                     <div class="skill-tag"><i class="fab fa-php mr-2 text-blue-600"></i> PHP</div>
                                     <div class="skill-tag"><i class="fab fa-node-js mr-2 text-blue-600"></i> Node</div>
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
                                     <div class="skill-tag"><i class="fas fa-code mr-2"></i> API</div>
                                 </div>
                             </div>
@@ -906,10 +832,7 @@
                             <div class="exp-entry">
                                 <div class="flex flex-col">
                                     <strong class="block text-lg font-medium">
-                                        <a class="block sm:inline text-yellow-400" target="_blank"
-                                            rel="noopener noreferrer" aria-label="Opens in a new window"
-                                            href="https://breakdownservices.com/">Nonfat Media (Breakdown) <i
-                                                class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                        <a class="block sm:inline text-yellow-400" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new window" href="https://breakdownservices.com/">Nonfat Media (Breakdown) <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
                                         <span class="hidden sm:inline">&middot;</span> Senior Front-end Engineer
                                     </strong>
                                     <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 mt-1">
@@ -923,20 +846,16 @@
                                 </p>
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
                                     <div class="skill-tag"><i class="fab fa-react mr-2 text-blue-600"></i> React</div>
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
-                                    <div class="skill-tag"><i class="fa fa-snowflake mr-2 text-yellow-500"></i>
-                                        Coldfusion</div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
+                                    <div class="skill-tag"><i class="fa fa-snowflake mr-2 text-yellow-500"></i> Coldfusion</div>
                                 </div>
                             </div>
 
                             <div class="exp-entry">
                                 <div class="flex flex-col">
                                     <strong class="block text-lg font-medium">
-                                        <a class="block sm:inline text-yellow-400" target="_blank"
-                                            rel="noopener noreferrer" aria-label="Opens in a new window"
-                                            href="https://mirumagency.com/">
-                                            Mirum Agency (Lunchbox)
+                                        <a class="block sm:inline text-yellow-400" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new window" href="https://mirumagency.com/">
+                                            Mirum Agency (Lunchbox) 
                                             <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i>
                                         </a>
                                         <span class="hidden sm:inline">&middot;</span> Senior Software Engineer
@@ -963,9 +882,7 @@
                             <div class="exp-entry">
                                 <div class="flex flex-col">
                                     <strong class="block text-lg font-medium">
-                                        <a class="block sm:inline text-yellow-400" target="_blank"
-                                            rel="noopener noreferrer" aria-label="Opens in a new window"
-                                            href="https://steelhouse.com/">SteelHouse
+                                        <a class="block sm:inline text-yellow-400" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new window" href="https://steelhouse.com/">SteelHouse
                                             <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
                                         <span class="hidden sm:inline">&middot;</span> UI Developer
                                     </strong>
@@ -988,10 +905,7 @@
                             <div class="exp-entry">
                                 <div class="flex flex-col">
                                     <strong class="block text-lg font-medium">
-                                        <a class="block sm:inline text-yellow-400" target="_blank"
-                                            rel="noopener noreferrer" aria-label="Opens in a new window"
-                                            href="https://visioncourse.com/">PSHelper.com (VisionCourse) <i
-                                                class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
+                                        <a class="block sm:inline text-yellow-400" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new window" href="https://visioncourse.com/">PSHelper.com (VisionCourse) <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i></a>
                                         <span class="hidden sm:inline">&middot;</span> Front-end Developer
                                     </strong>
                                     <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 mt-1">
@@ -1003,8 +917,7 @@
                                 <p class="text-sm mt-2">Pixel-perfect cross-browser psd to html, and JavaScript based
                                     shopping cart functionality, compatible in all browsers including IE 7,8,9.</p>
                                 <div class="flex flex-wrap gap-2 mt-3 text-xs print:hidden">
-                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript
-                                    </div>
+                                    <div class="skill-tag"><i class="fab fa-js mr-2 text-yellow-500"></i> JavaScript</div>
                                     <div class="skill-tag"><i class="fab fa-css3-alt mr-2 text-blue-500"></i> CSS</div>
                                 </div>
                             </div>
@@ -1012,10 +925,8 @@
                             <div class="exp-entry">
                                 <div class="flex flex-col">
                                     <strong class="block text-lg font-medium">
-                                        <a class="block sm:inline text-yellow-400" target="_blank"
-                                            rel="noopener noreferrer" aria-label="Opens in a new window"
-                                            href="https://thevillagenews.com/">
-                                            The Village News
+                                        <a class="block sm:inline text-yellow-400" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new window" href="https://thevillagenews.com/">
+                                            The Village News 
                                             <i class="text-sm fa-solid fa-arrow-up-right-from-square"></i>
                                         </a>
                                         <span class="hidden sm:inline">&middot;</span> Web Developer &amp; Support
@@ -1043,17 +954,12 @@
                                     <strong class="text-yellow-400">Dellaport.dev / Freelance</strong>
                                     <span class="text-xs text-slate-400">PHP · .NET · JavaScript</span>
                                 </div>
-                                <p class="text-xs  text-slate-300 mb-4">See <a href="https://dellaport.dev/#clients"
-                                        target="_blank" rel="noopener noreferrer"
-                                        class="text-highlight hover:underline">dellaport.dev</a> for more live client
-                                    examples.</p>
+                                <p class="text-xs  text-slate-300 mb-4">See <a href="https://dellaport.dev/#clients" target="_blank" rel="noopener noreferrer" class="text-highlight hover:underline">dellaport.dev</a> for more live client examples.</p>
 
                                 <ul class="text-sm text-slate-300 space-y-2 pl-2">
                                     <li class="project-item">Self-managed CMS buildouts for non-technical clients</li>
-                                    <li class="project-item">Making legacy shopping cart systems responsive and mobile
-                                        compatible</li>
-                                    <li class="project-item">Custom WordPress plugin development and long-term
-                                        maintenance</li>
+                                    <li class="project-item">Making legacy shopping cart systems responsive and mobile compatible</li>
+                                    <li class="project-item">Custom WordPress plugin development and long-term maintenance</li>
                                     <li class="project-item">Multiple OAuth API integrations, like Constant Contact</li>
                                     <li class="project-item">Ticket resale platform integrations
                                         <ul class="project-sub">
@@ -1062,8 +968,7 @@
                                             <li>Custom reporting and billing generation</li>
                                         </ul>
                                     </li>
-                                    <li class="project-item">Cumulatively increased net sales by more than $1,000,000
-                                        for 2025 with API integrations</li>
+                                    <li class="project-item">Cumulatively increased net sales by more than $1,000,000 for 2025 with API integrations</li>
                                 </ul>
                             </div>
 
@@ -1087,22 +992,18 @@
                                             <li>Automated document generation from structured form data</li>
                                         </ul>
                                     </li>
-                                    <li class="project-item">REST API design and third-party data provider integrations
-                                    </li>
+                                    <li class="project-item">REST API design and third-party data provider integrations</li>
                                 </ul>
                             </div>
 
                             <div class="project-entry">
                                 <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-2">
                                     <strong class="text-yellow-400">
-                                        clanorb.com <a href="https://staging.clanorb.com" target="_blank"
-                                            rel="noopener noreferrer" class="text-xs ml-1"><i
-                                                class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                        clanorb.com <a href="https://staging.clanorb.com" target="_blank" rel="noopener noreferrer" class="text-xs ml-1"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                                     </strong>
                                     <span class="text-xs text-slate-400">SvelteKit · TypeScript</span>
                                 </div>
-                                <p class="text-xs  text-slate-300 mb-4">Personal website for an online gaming community,
-                                    test bed and experimental coding sandbox.</p>
+                                <p class="text-xs  text-slate-300 mb-4">Personal website for an online gaming community, test bed and experimental coding sandbox.</p>
                                 <ul class="text-sm text-slate-300 space-y-2 pl-2">
                                     <li class="project-item">Custom API Integrations
                                         <ul class="project-sub">
@@ -1115,11 +1016,9 @@
                                             <li>Custom UDP packet parser for legacy master server display</li>
                                         </ul>
                                     </li>
-                                    <li class="project-item">Self-hosted and configured ArchLinux web server through
-                                        Cloudflare proxy, using Caddy </li>
-                                    <li class="project-item">CI/CD pipeline setup based on Git hooks, to replace
-                                        existing Heroku-based server</li>
-                                </ul>
+                                    <li class="project-item">Self-hosted and configured ArchLinux web server through Cloudflare proxy, using Caddy </li>
+                                    <li class="project-item">CI/CD pipeline setup based on Git hooks, to replace existing Heroku-based server</li>
+                                 </ul>
                             </div>
 
                         </div>
@@ -1131,8 +1030,7 @@
                         <h3 class="font-semibold mb-4 highlight">Written Recommendations</h3>
                         <div class="px-4">
                             <div class="recommendation-card">
-                                <strong class="text-yellow-400">William Mohler &middot; SVP Of Product Development at
-                                    Voxtur</strong><br>
+                                <strong class="text-yellow-400">William Mohler &middot; SVP Of Product Development at Voxtur</strong><br>
                                 <p class="text-xs text-slate-400">2023 &middot; Direct Manager</p>
                                 <p class="italic mt-2 text-sm">
                                     "I had the pleasure of managing Bryant at Clarocity,
@@ -1143,8 +1041,7 @@
                                 </p>
                             </div>
                             <div class="recommendation-card">
-                                <strong class="text-yellow-400">Ryan Elston &middot; Director of Technology at
-                                    Lunchbox</strong><br>
+                                <strong class="text-yellow-400">Ryan Elston &middot; Director of Technology at Lunchbox</strong><br>
                                 <p class="text-xs text-slate-400">2018 &middot; Direct Manager</p>
                                 <p class="italic mt-2 text-sm">
                                     "I want to recommend Bryant as one of my star developers
@@ -1168,70 +1065,49 @@
 
                         <div class="px-4 space-y-6">
                             <div class="faq-item">
-                                <p class="font-semibold text-yellow-400 mb-2">Are you open to full-time employment? [W2]
-                                </p>
+                                <p class="font-semibold text-yellow-400 mb-2">Are you open to full-time employment? [W2]</p>
                                 <p class="text-sm text-slate-300">
-                                    Yes, I'm currently looking for full-time opportunities that are fully remote,
-                                    hybrid, or on-site roles within the Northern San Diego / Southern California area.
+                                    Yes, I'm currently looking for full-time opportunities that are fully remote, hybrid, or on-site roles within the Northern San Diego / Southern California area.
                                     I am a legal U.S. resident and do not require sponsorship or visa accomodations.
                                 </p>
                             </div>
                             <div class="faq-item">
-                                <p class="font-semibold text-yellow-400 mb-2">Are you available for freelance or
-                                    contract work? [1099]</p>
+                                <p class="font-semibold text-yellow-400 mb-2">Are you available for freelance or contract work? [1099]</p>
                                 <p class="text-sm text-slate-300">
-                                    I currently prefer W2 work but will take on freelance and contract projects through
-                                    <a href="https://www.dellaport.dev" target="_blank"
-                                        rel="noreferrer noopener">Dellaport.dev</a>. Contract availability may be
-                                    dependant on W2 status.
+                                    I currently prefer W2 work but will take on freelance and contract projects through <a href="https://www.dellaport.dev" target="_blank" rel="noreferrer noopener">Dellaport.dev</a>. Contract availability may be dependant on W2 status.
                                 </p>
                             </div>
                             <div class="faq-item">
-                                <p class="font-semibold text-yellow-400 mb-2">Do you work on design as well as
-                                    development?</p>
+                                <p class="font-semibold text-yellow-400 mb-2">Do you work on design as well as development?</p>
                                 <p class="text-sm text-slate-300">
-                                    When it comes to design, my strength is in interface design, such as complex forms,
-                                    dashboards, and metrics displays.
-                                    I'm proficient with making pixel-perfect implementations of designs, mockups, and
-                                    examples provided by graphic designers, or seamlessly expanding upon existing
-                                    designs.
+                                    When it comes to design, my strength is in interface design, such as complex forms, dashboards, and metrics displays. 
+                                    I'm proficient with making pixel-perfect implementations of designs, mockups, and examples provided by graphic designers, or seamlessly expanding upon existing designs.
                                 </p>
                             </div>
                             <div class="faq-item">
                                 <p class="font-semibold text-yellow-400 mb-2">What's your preferred tech stack?</p>
                                 <p class="text-sm text-slate-300">
-                                    My core strengths are CSS and JavaScript across Node and PHP environments, with
-                                    intermediate hands-on experience in React and TypeScript.
-                                    I have worked in TypeScript only environments, but have not mastered the more
-                                    complex use cases.
-                                    I have a strong foundational understanding of CSS, HTML/DOM, and the JavaScript
-                                    engine.
+                                My core strengths are CSS and JavaScript across Node and PHP environments, with intermediate hands-on experience in React and TypeScript. 
+                                I have worked in TypeScript only environments, but have not mastered the more complex use cases. 
+                                I have a strong foundational understanding of CSS, HTML/DOM, and the JavaScript engine.
                                 </p>
                             </div>
                             <div class="faq-item">
                                 <p class="font-semibold text-yellow-400 mb-2">What size teams have you worked with?</p>
                                 <p class="text-sm text-slate-300">
-                                    I've worked primarily with smaller teams of 3-10, but I've also worked within a
-                                    larger organization spanning multiple teams across multiple regions.
-                                    As a team lead among 2 other teams, I handled interviews, served as the first point
-                                    of contact for technical problems, and contributed to intranet applications and
-                                    frameworks used organization-wide.
-                                    My favorite part of this position was mentoring junior developers to grow their
-                                    skills, confidence, and code quality.
+                                    I've worked primarily with smaller teams of 3-10, but I've also worked within a larger organization spanning multiple teams across multiple regions. 
+                                    As a team lead among 2 other teams, I handled interviews, served as the first point of contact for technical problems, and contributed to intranet applications and frameworks used organization-wide. 
+                                    My favorite part of this position was mentoring junior developers to grow their skills, confidence, and code quality.
                                 </p>
                             </div>
                             <div class="faq-item">
                                 <p class="font-semibold text-yellow-400 mb-2">AI (LLM) Usage and Experience</p>
                                 <p class="text-sm text-slate-300">
-                                    I use LLM chat interfaces like ChatGTP, Claude, and Gemini in my workflow to build
-                                    boilerplate code and rapidly iterate on ideas or solve problems with my code.
-                                    I work in problem-focused, small, segmented context windows and rarely hit usage
-                                    limits.
-                                    I do not work with agentic programming as I have a preference for manually reviewing
-                                    all code that is AI generated.
+                                    I use LLM chat interfaces like ChatGTP, Claude, and Gemini in my workflow to build boilerplate code and rapidly iterate on ideas or solve problems with my code.
+                                    I work in problem-focused, small, segmented context windows and rarely hit usage limits.
+                                    I do not work with agentic programming as I have a preference for manually reviewing all code that is AI generated.
                                     <br />
-                                    I understand of what types of problems LLMs are both good and bad at solving and
-                                    treat AI as one tool of many.
+                                    I understand of what types of problems LLMs are both good and bad at solving and treat AI as one tool of many.
                                     I am open to using more or less AI depending on work environment requirements.
                                     AI was not directly used in any of the written text content of this site/resume.
                                 </p>
@@ -1239,21 +1115,16 @@
                             <div class="faq-item">
                                 <p class="font-semibold text-yellow-400 mb-2">Employment Gap</p>
                                 <p class="text-sm text-slate-300">
-                                    After leaving Voxtur in 2023, I negotiated several long-term contracts with existing
-                                    freelance clients needing modernization of
-                                    their web presence. Over the following years I built them feature-complete,
-                                    API-connected, automated, and
-                                    mobile-friendly systems they can fully self-manage. I did not seek out additional
-                                    employment during this time.
+                                    After leaving Voxtur in 2023, I negotiated several long-term contracts with existing freelance clients needing modernization of
+                                    their web presence. Over the following years I built them feature-complete, API-connected, automated, and
+                                    mobile-friendly systems they can fully self-manage. I did not seek out additional employment during this time.
                                 </p>
                             </div>
                             <div class="faq-item">
                                 <p class="font-semibold text-yellow-400 mb-2">Employment Frequency</p>
                                 <p class="text-sm text-slate-300">
-                                    During my time in Los Angeles, I sought out roles that pushed my skillset at
-                                    fast-moving companies.
-                                    These environments came with rapid growth but also volatility, acquisitions, and
-                                    re-organizations.
+                                    During my time in Los Angeles, I sought out roles that pushed my skillset at fast-moving companies. 
+                                    These environments came with rapid growth but also volatility, acquisitions, and re-organizations. 
                                     I was typically referred to new roles quickly.</p>
                             </div>
                         </div>
@@ -1262,10 +1133,8 @@
             </div><!-- /panel-wrap -->
         </main>
 
-        <button id="width-toggle" aria-label="Toggle page width"
-            class="group hidden lg:flex items-center justify-center absolute inset-y-0 right-0 w-2.5 z-20 cursor-pointer bg-transparent hover:bg-highlight/20 transition-colors print:hidden">
-            <i
-                class="fa-solid fa-arrows-left-right fixed top-1/2 -translate-y-1/2 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        <button id="width-toggle" aria-label="Toggle page width" class="group hidden lg:flex items-center justify-center absolute inset-y-0 right-0 w-2.5 z-20 cursor-pointer bg-transparent hover:bg-highlight/20 transition-colors print:hidden">
+            <i class="fa-solid fa-arrows-left-right fixed top-1/2 -translate-y-1/2 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
         </button>
     </div>
 </body>
@@ -1282,7 +1151,7 @@
 
         document.getElementById('width-toggle').addEventListener('click', () => {
             document.getElementById('layout').classList.toggle('max-w-screen-lg');
-        });
+        });        
 
         // Sections that live inside the resume panel — any hash matching these routes to resume first
         const resumeSectionIds = new Set(['skills', 'about-me', 'work-history']);
