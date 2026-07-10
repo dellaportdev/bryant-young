@@ -725,25 +725,50 @@
                         </ul>
                     </section>
 
-                    <section id="cover-letter" class="mb-12">
+                    <section id="cover-letter" class="mb-12 mt-10">
                         <h3 class="font-semibold mb-4 highlight">Introduction / Cover Letter</h3>
                         <div class="px-4 text-sm text-slate-300 space-y-4 mb-8">
                             <p>
-                                I'm writing to express my interest in the Web Developer I position with San Diego State University. With 22 years of
-                                front-end and full-stack web development experience and a focus on accessible, responsive, standards-based work, I'm
-                                confident I can meet or exceed the listed qualifications for this position. My skill set is broad and flexible, and I'm
-                                comfortable working with a wide variety of technologies and software. I am a quick learner and adapt well to working
-                                with and maintaining unfamiliar systems.
+                                I'm writing to express my interest in the Web Developer I position with San Diego State University. With over 20 years
+                                of front-end and full-stack web development experience and a focus on accessible, responsive, standards-based work, I
+                                believe this position is a strong fit for my background. My skill set is broad and flexible, and I am comfortable
+                                working with a wide variety of technologies and software. I am also a quick learner who adapts well to maintaining and
+                                improving unfamiliar systems.
                             </p>
                             <p>
-                                Over the last few years of freelance work, I've increasingly taken on projects aimed at directly helping people rather
-                                than selling products, and a position in education aligns well with that trajectory. I'm excited by the prospect of work
-                                that may indirectly, and sometimes directly, benefit students and educational systems as a whole.
+                                The key responsibilities and qualifications of this position align closely with my experience. I have developed and
+                                maintained websites using content management systems such as Drupal and WordPress, and I am confident that this
+                                experience would transfer well to working with OmniCMS. I have created email and social media content, worked within
+                                established brand guidelines, and supported websites requiring long-term maintenance and compatibility.
+                            </p>
+                            <p>
+                                In addition to web development, I have experience with graphic design and four-color print production, and I am
+                                comfortable working with several of the primary applications in Adobe Creative Suite. My combination of development,
+                                design, and maintenance experience would allow me to contribute across the range of responsibilities described for this role.
+                            </p>
+                            <p>
+                                Over the last few years of freelance work, I have increasingly taken on projects aimed at directly helping people rather
+                                than selling products. A position in education aligns well with that trajectory, and I am excited by the prospect of
+                                work that benefits students and the broader educational community.
                             </p>
                             <p>
                                 Thank you for your consideration,<br>
                                 Bryant Young
                             </p>
+                        </div>
+
+                        <div class="flex justify-center" id="print-cover">
+                            <button type="button" onclick="printCoverLetter()"
+                                class="inline-flex items-center gap-2 text-sm font-medium text-sky-400 transition hover:text-sky-300 focus:outline-none focus-visible:underline opacity-50 hover:opacity-100">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M6 9V2h12v7"></path>
+                                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                    <rect x="6" y="14" width="12" height="8"></rect>
+                                </svg>
+
+                                Cover Letter Only
+                            </button>
                         </div>
                     </section>
                 </div><!-- /panel-resume -->
@@ -1376,7 +1401,8 @@
                 // '.cover-only aside nav,' +
                 // '.cover-only aside .out,' +
                 '.cover-only #width-toggle,' +
-                // '.cover-only #about-me,' +
+                '.cover-only #print-cover,' +
+                '.cover-only #about-me,' +
                 '.cover-only .panel:not(#panel-resume),' +
                 '.cover-only #panel-resume > section:not(#cover-letter)' +
                 '{display:none !important;}';
@@ -1391,8 +1417,6 @@
         window.addEventListener('afterprint', cleanup);
         document.body.classList.add('cover-only');
         void document.body.offsetHeight;
-
-        requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
     }          
 </script>
 
