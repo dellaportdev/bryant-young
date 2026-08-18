@@ -12,7 +12,7 @@
     <style>
         body {
             font-family: Inter, sans-serif;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.5;
             color: #000;
             background: #fff;
@@ -158,7 +158,7 @@
         <li>Developed a large number of custom purpose-built UIs and editorial tools.</li>
     </ul>
 
-    <h2>Recent Example Projects</h2>
+    <h2>Personal projects as examples of recent work</h2>
 
     <h3><strong>staging.clanorb.com</strong> - SvelteKit, TypeScript, PostgreSQL</h3>
     <ul>
@@ -167,6 +167,28 @@
         <li>Discord OAuth authentication, custom UDP packet parser for a legacy master server, and news aggregation from public REST/XML APIs.</li>
         <li>API caching layer handling rate limiting and stale data.</li>
         <li>Self-hosted Arch Linux server behind Cloudflare using Caddy, with a Git hook-based CI/CD pipeline replacing a Heroku deployment.</li>
+    </ul>
+
+    <h3><strong>YouTube Playlist explorer </strong> (not available online) - React, TypeScript</h3>
+    <ul>
+        <li>React 18 and strict TypeScript application built with Vite and Tailwind CSS.</li>
+        <li>Node.js backend integrating yt-dlp and FFmpeg for YouTube metadata extraction, playlist/channel inspection, MP3 conversion, embedded metadata, and thumbnail artwork.</li>
+        <li>Custom Server-Sent Events progress system for live download, conversion, metadata, artwork, completion, duplicate, and failure states.</li>
+        <li>Interactive YouTube playlist and channel explorer with in-app video preview, collection tracking, playlist history, channel history, and saved MP3 library management.</li>
+        <li>Normalized YouTube metadata layer for videos, playlists, channels, thumbnails, descriptions, upload dates, view counts, and chapter/timestamp segments.</li>
+        <li>Reusable media UI components for list/grid/compact views, video playback controls, playlist navigation, channel browsing, and collection/download actions.</li>
+        <li>Local development proxy setup between Vite and the Node backend, with static production serving from the same backend process.</li>
+    </ul>
+
+    <h3><strong>fallbrooklions.org</strong> - JavaScript, Petite Vue, Tailwind CSS</h3>
+    <ul>
+        <li>Pro bono site for a local volunteer service organization, built and maintained as a front-end only static site with full functionality &mdash; no backend, CMS, or build step, with all content driven by plain JavaScript data modules.</li>
+        <li>Custom events calendar built on Petite Vue with month grid, list, and index views, a day-detail modal, category filters, and generated recurring events alongside federal, state, and district observances.</li>
+        <li>Timezone-safe date layer that parses and formats local dates without UTC drift, handling multi-day ranges, all-day events, and past-event demotion.</li>
+        <li>Meeting minutes archive with year tabs, lazily rendered panels, and HEAD requests that disable links for minutes not yet posted.</li>
+        <li>Officer roster, photo carousel, and date-gated announcement banners rendered from a single data file so non-technical members can update content without touching markup.</li>
+        <li>Zero-dependency QR code generator implementing the encoding spec from scratch, including error correction and mask penalty scoring, with live contrast warnings and PNG/SVG export; validated against a reference encoder and OpenCV decoding.</li>
+        <li>Accessibility throughout: skip links, ARIA tab and dialog patterns, keyboard navigation, and focus-visible states.</li>
     </ul>
 
 </body>
