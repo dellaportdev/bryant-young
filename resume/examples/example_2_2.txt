@@ -1,0 +1,294 @@
+<?php
+define('CC_GET_TOKEN_URL', 'https://authz.constantcontact.com/oauth2/default/v1/token');
+define('CC_AUTHORIZE_URL', 'https://authz.constantcontact.com/oauth2/default/v1/authorize');
+define('CC_ADD_CONTACTS_URL', 'https://api.cc.email/v3/contacts');
+define('CC_CUSTOM_FIELD_COMPANY_CODE', 'YOUR_COMPANY_CODE_FIELD_ID');
+
+define('CC_CLIENT_KEY', 'YOUR_CLIENT_ID');
+define('CC_CLIENT_SECRET', 'YOUR_CLIENT_SECRET');
+
+define('CC_LIST_ID', 'YOUR_LIVE_LIST_ID');
+define('CC_TEST_LIST_ID', 'YOUR_TEST_LIST_ID');
+
+class ConstantContact
+{
+    private $config;
+    public $access_token;
+    public $refresh_token;
+
+    public function __construct()
+    {
+        global $db;
+
+        $this->config = [
+            'url_token' => CC_GET_TOKEN_URL,
+            'url_add_contact' => CC_ADD_CONTACTS_URL,
+            'url_redirect' => CC_REDIRECT_URL,
+            'company_code' => CC_CUSTOM_FIELD_COMPANY_CODE,
+            'list_id' => CC_LIST_ID,
+            'test_list_id' => CC_TEST_LIST_ID,
+            'key' => CC_CLIENT_KEY,
+            'secret' => CC_CLIENT_SECRET,
+        ];
+
+        $tokens = $db->querySingle("SELECT * FROM ".TABLE_API_TOKENS." WHERE token_type = 'constant_contact'");
+        $this->access_token = $tokens['access_token'];
+        $this->refresh_token = $tokens['refresh_token'];
+    }
+
+    // Builds the authorization URL and stores its state value in the session for the redirect check.
+    public function auth_url()
+    {
+        $_SESSION['cc_oauth_state'] = bin2hex(random_bytes(16));
+
+        return CC_AUTHORIZE_URL . '?' . http_build_query([
+            'client_id' => $this->config['key'],
+            'redirect_uri' => $this->config['url_redirect'],
+            'response_type' => 'code',
+            'state' => $_SESSION['cc_oauth_state'],
+            'nonce' => bin2hex(random_bytes(16)),
+            'scope' => 'contact_data campaign_data offline_access',
+        ]);
+    }
+
+    // Exchanges the authorization code from the OAuth redirect for tokens, rejecting redirects this session didn't start.
+    public function get_token($code, $state)
+    {
+        $expected_state = $_SESSION['cc_oauth_state'] ?? '';
+        unset($_SESSION['cc_oauth_state']);
+
+        if ($expected_state === '' || !hash_equals($expected_state, (string)$state)) {
+            throw new Exception('OAuth state mismatch; start the authorization again.');
+        }
+
+        return $this->request_tokens([
+            'grant_type' => 'authorization_code',
+            'code' => $code,
+            'redirect_uri' => $this->config['url_redirect'],
+        ]);
+    }
+
+    public function refresh_access_token()
+    {
+        return $this->request_tokens([
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $this->refresh_token,
+        ]);
+    }
+
+    // Creates the contact on a list ('live', 'test' or a raw list ID) and returns the API response.
+    public function add_user($user, $list_id = 'live')
+    {
+        global $db;
+
+        $lists = ['live' => $this->config['list_id'], 'test' => $this->config['test_list_id']];
+        $list_id = $lists[$list_id ?: 'live'] ?? $list_id;
+
+        $state = $db->querySingle(
+            "SELECT zone_code FROM ".TABLE_ZONES." WHERE zone_id = :zone_id",
+            ['zone_id', $user['zone_id'], 'integer'],
+            'zone_code'
+        );
+
+        $company_name = $db->querySingle(
+            "SELECT record_company_name FROM ".TABLE_COMPANIES." WHERE record_company_id = :company_id",
+            ['company_id', $user['company_id'], 'integer'],
+            'record_company_name'
+        );
+
+        $contact = [
+            'email_address' => [
+                'address' => $user['email'],
+                'permission_to_send' => 'implicit',
+            ],
+            'first_name' => $user['first_name'],
+            'last_name' => $user['last_name'],
+            'company_name' => $company_name,
+            'create_source' => 'Account',
+            'custom_fields' => [
+                [
+                    'custom_field_id' => $this->config['company_code'],
+                    'value' => $user['accesscode'],
+                ],
+            ],
+            'notes' => [
+                ['content' => 'Contact added via automated API Call during signup.'],
+            ],
+            'list_memberships' => [$list_id],
+            'street_addresses' => [
+                [
+                    'street' => $user['street_address'],
+                    'city' => $user['city'],
+                    'state' => $state,
+                    'postal_code' => $user['postcode'],
+                    'country' => 'USA',
+                    'kind' => 'home',
+                ],
+            ],
+            'phone_numbers' => [
+                [
+                    'phone_number' => $user['telephone'],
+                    'kind' => 'home',
+                ],
+            ],
+        ];
+
+        return $this->curl($this->config['url_add_contact'], [
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($contact),
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $this->access_token,
+                'Content-Type: application/json',
+            ],
+        ], 'cc_AddUser');
+    }
+
+    public function count_history()
+    {
+        global $db;
+
+        $row = $db->querySingle("SELECT COUNT(*) AS total FROM ".TABLE_API_CACHE_HISTORY." WHERE type LIKE 'cc_%'");
+
+        return (int)$row['total'];
+    }
+
+    public function get_history($limit, $offset)
+    {
+        global $db;
+
+        return $db->queryArray(sprintf(
+            "SELECT * FROM ".TABLE_API_CACHE_HISTORY." WHERE type LIKE 'cc_%%' ORDER BY updated DESC LIMIT %d OFFSET %d",
+            $limit,
+            $offset
+        ));
+    }
+
+    // Pretty-prints a decoded array or a JSON string (including double-encoded or HTML-escaped JSON),
+    // optionally as colorized HTML. Input that isn't JSON is returned as-is, escaped when colorizing.
+    public function pretty_print_json($json, $colorize = false)
+    {
+        if (is_array($json)) {
+            $data = $json;
+        } else {
+            $json = (string)$json;
+            $data = json_decode($json, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $data = json_decode(html_entity_decode($json), true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    return $colorize ? htmlspecialchars($json) : $json;
+                }
+            }
+            if (is_string($data) && json_decode($data, true) !== null) {
+                $data = json_decode($data, true);
+            }
+        }
+
+        $pretty = json_encode($data, JSON_PRETTY_PRINT);
+        if (!$colorize) {
+            return $pretty;
+        }
+
+        $html = htmlspecialchars($pretty);
+        $html = preg_replace('/(:\s*)(null)/', '$1<em style="color: #808080;">$2</em>', $html);
+        $html = preg_replace('/(&quot;[^&]+&quot;)(\s*:\s*)(&quot;[^&]+&quot;|[^,&]+)/', '<span style="color: #d14;">$1</span>$2<span style="color: #1a1;">$3</span>', $html);
+        $html = preg_replace('/(\{|\}|\[|\])/', '<span style="color: #000;">$1</span>', $html);
+
+        return $html;
+    }
+
+    // Posts an OAuth token grant, then stores the returned tokens on the instance and in the database.
+    private function request_tokens(array $grant)
+    {
+        $response = $this->curl($this->config['url_token'], [
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => http_build_query($grant),
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Basic ' . base64_encode($this->config['key'] . ':' . $this->config['secret']),
+                'Content-Type: application/x-www-form-urlencoded',
+            ],
+        ], null, false);
+
+        if (!is_array($response) || !isset($response['access_token'])) {
+            throw new Exception('Token request failed: ' . print_r($response, true));
+        }
+
+        $this->access_token = $response['access_token'];
+        $this->refresh_token = $response['refresh_token'] ?? $this->refresh_token;
+        $this->save_tokens($this->access_token, $this->refresh_token);
+
+        return true;
+    }
+
+    private function save_tokens($access_token, $refresh_token)
+    {
+        global $db;
+
+        $sql = "UPDATE ".TABLE_API_TOKENS." SET access_token = :access_token, refresh_token = :refresh_token, token_updated = NOW() WHERE token_type = 'constant_contact'";
+        $sql = $db->bindVars($sql, ':access_token', $access_token, 'string');
+        $sql = $db->bindVars($sql, ':refresh_token', $refresh_token, 'string');
+        $db->Execute($sql);
+    }
+
+    // cURL wrapper: logs the call to cache_api_history when $cache_type is set and decodes 2xx JSON bodies;
+    // other statuses return the raw body. On a 401 it refreshes the access token and retries once.
+    protected function curl($url, $options, $cache_type = null, $retry_on_401 = true)
+    {
+        global $db;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, $options + [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        ]);
+
+        $response = curl_exec($curl);
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($curl);
+        curl_close($curl);
+
+        if ($cache_type && $db) {
+            $method = $options[CURLOPT_CUSTOMREQUEST] ?? 'GET';
+            $params = null;
+            if ($method == 'GET') {
+                parse_str((string)parse_url($url, PHP_URL_QUERY), $query);
+                $params = json_encode($query, JSON_PRETTY_PRINT);
+            }
+
+            $db->insert_from_array([
+                'response' => $response,
+                'error' => $curl_error,
+                'date' => date('Y-m-d'),
+                'updated' => 'NOW()',
+                'url' => $url,
+                'params' => $params,
+                'postfields' => $method == 'POST' ? $options[CURLOPT_POSTFIELDS] : null,
+                'httpcode' => $httpcode,
+                'type' => $cache_type,
+            ], TABLE_API_CACHE_HISTORY);
+        }
+
+        if ($response === false) {
+            throw new Exception('cURL error: ' . $curl_error);
+        }
+
+        if ($httpcode == 401 && $retry_on_401) {
+            $this->refresh_access_token();
+            $headers = array_filter($options[CURLOPT_HTTPHEADER] ?? [], fn($header) => stripos($header, 'Authorization:') !== 0);
+            $options[CURLOPT_HTTPHEADER] = [...$headers, 'Authorization: Bearer ' . $this->access_token];
+
+            return $this->curl($url, $options, $cache_type, false);
+        }
+
+        if ($httpcode >= 200 && $httpcode < 300 && $response !== '') {
+            return json_decode($response, true);
+        }
+
+        return $response;
+    }
+}

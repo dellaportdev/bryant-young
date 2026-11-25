@@ -1,0 +1,17 @@
+// routes/api/tribes/master/+server.ts
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { cacheFetch } from '$lib/server/cacheHandler';
+import { fetchTribesStatus, toLegacyMaster } from '$lib/server/tribes';
+
+export const GET: RequestHandler = async () => {
+    try {
+        const status = await cacheFetch('tribes', ['status'], 30_000, () => fetchTribesStatus());
+        return json(toLegacyMaster(status));
+    } catch (err) {
+        return json(
+            { error: true, message: err instanceof Error ? err.message : 'Master query failed' },
+            { status: 502 }
+        );
+    }
+};  

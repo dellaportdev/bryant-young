@@ -1,0 +1,257 @@
+<?php
+if (!class_exists('ConstantContact')) {
+    require($_SERVER['DOCUMENT_ROOT'] . '/classes/constant_contact.php');
+}
+$cc = new ConstantContact();
+$notice = null;
+
+// OAuth redirect: exchange the returned authorization code for tokens.
+if (isset($_GET['code'])) {
+    try {
+        $cc->get_token($_GET['code'], $_GET['state'] ?? '');
+        $notice = ['text' => 'Tokens successfully obtained and stored!', 'error' => false];
+    } catch (Exception $e) {
+        $notice = ['text' => 'Error: ' . $e->getMessage(), 'error' => true];
+    }
+}
+
+// Manual add: send the submitted contact to Constant Contact and show the API response.
+$submitted = isset($_POST['email_address']);
+if ($submitted) {
+    $user_fields = [
+        'email' => 'email_address',
+        'first_name' => 'firstname',
+        'last_name' => 'lastname',
+        'company_id' => 'company',
+        'accesscode' => 'accesscode',
+        'city' => 'city',
+        'postcode' => 'postcode',
+        'telephone' => 'telephone',
+        'street_address' => 'street_address',
+        'zone_id' => 'zone_id',
+    ];
+    $user = array_map(fn($field) => zen_db_prepare_input($_POST[$field] ?? ''), $user_fields);
+
+    try {
+        $add_response_html = $cc->pretty_print_json($cc->add_user($user, $_POST['list_id'] ?? 'test'), true);
+    } catch (Exception $e) {
+        $add_response_html = htmlspecialchars('Error: ' . $e->getMessage());
+    }
+}
+
+// History log: one page of entries, flattened into display rows.
+$per_page = 25;
+$total_rows = $cc->count_history();
+$total_pages = max(1, (int)ceil($total_rows / $per_page));
+$current_page = max(1, min((int)($_GET['page'] ?? 1), $total_pages));
+$offset = ($current_page - 1) * $per_page;
+
+$rows = [];
+foreach ($cc->get_history($per_page, $offset) ?: [] as $entry) {
+    $postfields = json_decode($entry['postfields'] ?? '', true);
+    $response = json_decode($entry['response'] ?? '', true);
+
+    $error_key = str_replace('contacts.api.', '', $response['error_key'] ?? $response[0]['error_key'] ?? '');
+    $error_message = $response['error_message'] ?? $response[0]['error_message'] ?? '';
+    $contact_id = $response['contact_id'] ?? '';
+    $is_success = $entry['httpcode'] == 201;
+
+    $rows[] = [
+        'updated' => $entry['updated'],
+        'email' => $postfields['email_address']['address'] ?? '',
+        'name' => trim(($postfields['first_name'] ?? '') . ' ' . ($postfields['last_name'] ?? '')),
+        'company' => $postfields['company_name'] ?? '',
+        'status_label' => $is_success ? '201 Created' : $entry['httpcode'] . ($error_key ? ' (' . $error_key . ')' : ''),
+        'status_title' => $is_success ? ($contact_id ? 'Contact ID: ' . $contact_id : '') : $error_message,
+        'status_classes' => $is_success ? 'text-green-700 bg-green-50 border-green-200' : 'text-red-700 bg-red-50 border-red-200',
+    ];
+}
+
+$base_url = htmlspecialchars(strtok($_SERVER['REQUEST_URI'], '?'));
+$showing_from = $offset + 1;
+$showing_to = min($offset + $per_page, $total_rows);
+$page_window = 2;
+$window_start = max(1, $current_page - $page_window);
+$window_end = min($total_pages, $current_page + $page_window);
+?>
+<!DOCTYPE html>
+<html <?php echo HTML_PARAMS; ?>>
+
+<head>
+    <meta charset="<?php echo CHARSET; ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Constant Contact API - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="includes/menu.js"></script>
+</head>
+
+<body onload="init()">
+    <?php require(DIR_WS_INCLUDES . 'header_new.php'); ?>
+    <div id="pageWrapper" class="p-4">
+
+        <?php if ($notice): ?>
+            <div class="mb-4 px-4 py-3 border rounded flex items-center gap-2 <?php echo $notice['error'] ? 'bg-red-100 border-red-400 text-red-800' : 'bg-green-100 border-green-400 text-green-800'; ?>" role="status">
+                <i class="fa-solid <?php echo $notice['error'] ? 'fa-circle-exclamation' : 'fa-circle-check'; ?>" aria-hidden="true"></i>
+                <?php echo htmlspecialchars($notice['text']); ?>
+            </div>
+        <?php endif; ?>
+
+        <h1 class="text-2xl font-semibold text-gray-800 mb-1">Constant Contact API</h1>
+        <p class="text-gray-500 text-sm mb-6">Manage Constant Contact integration, manually add contacts, and review submission history.</p>
+
+        <!-- Manually Add User -->
+        <section class="border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden bg-white">
+            <div class="bg-gray-50 border-b border-gray-200 px-4 py-3">
+                <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Manually Add User</h2>
+            </div>
+            <div class="p-4 flex gap-8 flex-wrap">
+                <div class="min-w-fit">
+                    <form action="api_constant_contact.php" method="post" class="text-sm space-y-2">
+                        <div class="grid grid-cols-[140px_1fr] gap-x-3 gap-y-2 items-center">
+                            <label for="cc-email" class="text-right text-gray-600">Email Address</label>
+                            <input type="email" id="cc-email" name="email_address" value="<?php echo htmlspecialchars($_POST['email_address'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" required />
+
+                            <label for="cc-firstname" class="text-right text-gray-600">First Name</label>
+                            <input type="text" id="cc-firstname" name="firstname" value="<?php echo htmlspecialchars($_POST['firstname'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-lastname" class="text-right text-gray-600">Last Name</label>
+                            <input type="text" id="cc-lastname" name="lastname" value="<?php echo htmlspecialchars($_POST['lastname'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-company" class="text-right text-gray-600">Company</label>
+                            <input type="text" id="cc-company" name="company" value="<?php echo htmlspecialchars($_POST['company'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-accesscode" class="text-right text-gray-600">Access Code</label>
+                            <input type="text" id="cc-accesscode" name="accesscode" value="TESTCODE" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-city" class="text-right text-gray-600">City</label>
+                            <input type="text" id="cc-city" name="city" value="<?php echo htmlspecialchars($_POST['city'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-postcode" class="text-right text-gray-600">Postcode</label>
+                            <input type="text" id="cc-postcode" name="postcode" value="<?php echo htmlspecialchars($_POST['postcode'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-telephone" class="text-right text-gray-600">Telephone</label>
+                            <input type="tel" id="cc-telephone" name="telephone" value="<?php echo htmlspecialchars($_POST['telephone'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-street" class="text-right text-gray-600">Street Address</label>
+                            <input type="text" id="cc-street" name="street_address" value="<?php echo htmlspecialchars($_POST['street_address'] ?? ''); ?>" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-zone" class="text-right text-gray-600">Zone ID</label>
+                            <input type="text" id="cc-zone" name="zone_id" value="223" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64" />
+
+                            <label for="cc-list" class="text-right text-gray-600">List</label>
+                            <select id="cc-list" name="list_id" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white w-64">
+                                <option value="live">Live List</option>
+                                <option value="test" selected>Test List</option>
+                            </select>
+                        </div>
+
+                        <div class="flex gap-2 pt-2 justify-end" style="max-width: calc(140px + 0.75rem + 256px);">
+                            <input type="reset" value="Reset" class="px-4 py-1.5 border border-gray-300 rounded text-sm text-gray-600 hover:bg-gray-50 cursor-pointer bg-white" />
+                            <input type="submit" value="Submit" class="px-4 py-1.5 bg-blue-700 text-white rounded text-sm hover:bg-blue-800 cursor-pointer" />
+                        </div>
+                    </form>
+                </div>
+
+                <?php if ($submitted): ?>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Response</h3>
+                        <pre class="bg-gray-100 border border-gray-300 rounded p-3 text-xs overflow-auto whitespace-pre-wrap break-words max-h-96"><?php echo $add_response_html; ?></pre>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- OAuth -->
+        <section class="border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden bg-white">
+            <div class="bg-gray-50 border-b border-gray-200 px-4 py-3">
+                <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">OAuth 2.0 Refresh Token Authorization</h2>
+            </div>
+            <div class="p-4 text-sm text-gray-700">
+                <p class="mb-2 text-gray-600">This re-establishes our OAuth refresh token. Should only need to be run once if the token has completely expired.</p>
+                <a href="<?php echo htmlspecialchars($cc->auth_url()); ?>" class="inline-block px-4 py-2 bg-blue-700 text-white rounded text-sm hover:bg-blue-800 transition">Authorization Link</a>
+            </div>
+        </section>
+
+        <!-- History Log -->
+        <section class="border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden bg-white">
+            <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Constant Contact API History</h2>
+                <span class="text-xs text-gray-400"><?php echo number_format($total_rows); ?> total entries</span>
+            </div>
+            <p class="text-xs text-gray-500 px-4 pt-3 pb-3">Entries from our cache history specific to Constant Contact.</p>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-100 text-xs text-gray-500 uppercase">
+                        <tr>
+                            <th scope="col" class="px-4 py-2 text-left whitespace-nowrap">Updated</th>
+                            <th scope="col" class="px-4 py-2 text-left">Status</th>
+                            <th scope="col" class="px-4 py-2 text-left">Email</th>
+                            <th scope="col" class="px-4 py-2 text-left">Name</th>
+                            <th scope="col" class="px-4 py-2 text-left">Company</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <?php if (empty($rows)): ?>
+                            <tr>
+                                <td colspan="5" class="px-4 py-4 text-center text-gray-400 italic">No history entries found.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($rows as $row): ?>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-2 text-xs text-gray-500 whitespace-nowrap"><?php echo htmlspecialchars($row['updated']); ?></td>
+                                    <td class="px-4 py-2">
+                                        <span title="<?php echo htmlspecialchars($row['status_title']); ?>" class="inline-block px-2 py-0.5 rounded border text-xs font-medium <?php echo $row['status_classes']; ?>"><?php echo htmlspecialchars($row['status_label']); ?></span>
+                                    </td>
+                                    <td class="px-4 py-2 text-xs text-gray-700"><?php echo htmlspecialchars($row['email']); ?></td>
+                                    <td class="px-4 py-2 text-xs text-gray-700 whitespace-nowrap"><?php echo htmlspecialchars($row['name']); ?></td>
+                                    <td class="px-4 py-2 text-xs text-gray-700"><?php echo htmlspecialchars($row['company']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <?php if ($total_pages > 1): ?>
+                <div class="px-4 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between text-sm">
+                    <span class="text-xs text-gray-500">Showing <?php echo number_format($showing_from); ?>–<?php echo number_format($showing_to); ?> of <?php echo number_format($total_rows); ?></span>
+                    <nav class="flex items-center gap-1" aria-label="History pages">
+                        <?php if ($current_page > 1): ?>
+                            <a href="<?php echo $base_url . '?page=' . ($current_page - 1); ?>" class="px-3 py-1 border border-gray-300 rounded text-xs text-gray-600 hover:bg-gray-100 bg-white">&larr; Prev</a>
+                        <?php endif; ?>
+
+                        <?php if ($window_start > 1): ?>
+                            <a href="<?php echo $base_url . '?page=1'; ?>" class="px-3 py-1 border border-gray-300 rounded text-xs text-gray-600 hover:bg-gray-100 bg-white">1</a>
+                            <?php if ($window_start > 2): ?><span class="px-1 text-gray-400 text-xs">&hellip;</span><?php endif; ?>
+                        <?php endif; ?>
+
+                        <?php for ($p = $window_start; $p <= $window_end; $p++): ?>
+                            <?php if ($p === $current_page): ?>
+                                <a href="<?php echo $base_url . '?page=' . $p; ?>" class="px-3 py-1 border rounded text-xs bg-blue-700 text-white border-blue-700 font-semibold" aria-current="page"><?php echo $p; ?></a>
+                            <?php else: ?>
+                                <a href="<?php echo $base_url . '?page=' . $p; ?>" class="px-3 py-1 border rounded text-xs border-gray-300 text-gray-600 hover:bg-gray-100 bg-white"><?php echo $p; ?></a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+
+                        <?php if ($window_end < $total_pages): ?>
+                            <?php if ($window_end < $total_pages - 1): ?><span class="px-1 text-gray-400 text-xs">&hellip;</span><?php endif; ?>
+                            <a href="<?php echo $base_url . '?page=' . $total_pages; ?>" class="px-3 py-1 border border-gray-300 rounded text-xs text-gray-600 hover:bg-gray-100 bg-white"><?php echo $total_pages; ?></a>
+                        <?php endif; ?>
+
+                        <?php if ($current_page < $total_pages): ?>
+                            <a href="<?php echo $base_url . '?page=' . ($current_page + 1); ?>" class="px-3 py-1 border border-gray-300 rounded text-xs text-gray-600 hover:bg-gray-100 bg-white">Next &rarr;</a>
+                        <?php endif; ?>
+                    </nav>
+                </div>
+            <?php endif; ?>
+        </section>
+
+    </div>
+    <?php require(DIR_WS_INCLUDES . 'footer.php'); ?>
+
+    <?php if (isset($_GET['code'])): ?>
+        <script>history.replaceState(null, '', location.pathname);</script>
+    <?php endif; ?>
+</body>
+</html>

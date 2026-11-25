@@ -1,0 +1,233 @@
+// lib/types/tribes.ts
+
+/** A team as reported by a game server; `score` is a tab-separated row using `%t` for the team name. */
+export type TribesTeam = {
+    name: string;
+    score: string;
+};
+
+/** A player as reported by a game server; `score` is a tab-separated row using `%n`, `%p` and `%l` placeholders. */
+export type TribesPlayer = {
+    name: string;
+    team: number;
+    score: string;
+    ping: number;
+    pl: number;
+};
+
+/** Everything a game server reports about itself in a single query reply. */
+export type TribesServerInfo = {
+    name: string;
+    game: string;
+    version: string;
+    mod: string;
+    serverType: string;
+    mission: string;
+    info: string;
+    dedicated: boolean;
+    password: boolean;
+    cpuSpeed: number;
+    numPlayers: number;
+    maxPlayers: number;
+    teamScoreHeader: string;
+    playerScoreHeader: string;
+    teams: TribesTeam[];
+    players: TribesPlayer[];
+};
+
+/** A queried game server: its reply plus where it lives and how long it took to answer. */
+export type TribesServer = TribesServerInfo & {
+    address: string;
+    ping: number;
+};
+
+/** Teams and players decoded from the native query's scoreboard rows. */
+export type TribesScoreboard = {
+    teams: TribesTeam[];
+    players: TribesPlayer[];
+};
+
+/** A node in the Huffman tree used to decode native query strings; negative child indexes are leaf symbols. */
+export type TribesHuffmanNode = {
+    pop: number;
+    zero: number;
+    one: number;
+};
+
+/** A raw master server reply: its identity and the game server addresses it lists. */
+export type TribesMasterQueryResult = {
+    address: string;
+    name: string;
+    motd: string;
+    ping: number;
+    servers: string[];
+};
+
+/** A master server's status as shown in the combined listing. */
+export type TribesMaster = {
+    address: string;
+    name: string;
+    motd: string;
+    ping: number | null;
+    serverCount: number;
+    online: boolean;
+};
+
+/** The combined result of querying every master server and every game server they list. */
+export type TribesStatus = {
+    masters: TribesMaster[];
+    servers: TribesServer[];
+    unreachable: number;
+    totalPlayers: number;
+    fetchedAt: string;
+};
+
+/** A header row and its matching value rows, used to build table columns. */
+export type TribesColumnTable = {
+    headers: string[];
+    rows: string[][];
+};
+
+/** One row of the server list returned by `/api/tribes/master`. */
+export type LegacyTribesListServer = {
+    address: string;
+    name: string;
+    ping: number;
+    map: string;
+    currentPlayers: number;
+    maxPlayers: number;
+    server: {
+        game: string;
+        mods: string;
+        needpass: boolean;
+        dedicated: boolean;
+    };
+};
+
+/** The `/api/tribes/master` response. */
+export type LegacyTribesMasterResponse = {
+    masters: TribesMaster[];
+    servers: LegacyTribesListServer[];
+    totalPlayers: number;
+    fetchedAt: string;
+};
+
+/** A team in the `/api/tribes/[ip]` response. */
+export type LegacyTribesTeam = {
+    id: number;
+    name: string;
+    score: string;
+    playercount: number;
+};
+
+/** A player in the `/api/tribes/[ip]` response; `columns` lines up with the detail's `playerColumns`. */
+export type LegacyTribesPlayer = {
+    name: string;
+    team: number;
+    score: string;
+    ping: number;
+    packetLoss: number;
+    columns: string[];
+};
+
+/** The `/api/tribes/[ip]` response shown in the server modal. */
+export type LegacyTribesServerDetail = {
+    server: {
+        name: string;
+        address: string;
+        ping: number;
+        packetLoss: number;
+        map: string;
+        description: string;
+    };
+    game: {
+        game: string;
+        version: string;
+        mods: string;
+        dedicated: boolean;
+        needpass: boolean;
+    };
+    teams: LegacyTribesTeam[];
+    playerColumns: string[];
+    players: LegacyTribesPlayer[];
+};
+
+/** A game server that can be embedded on another site, and where its embed renders. */
+export type TribesEmbedServer = {
+    address: string;
+    name: string;
+    framePath: string;
+    mountId: string;
+};
+
+/** The live summary baked into the embed script's status button. */
+export type TribesEmbedStatus = {
+    name: string;
+    players: number;
+    maxPlayers: number;
+};
+
+/** Settings passed into the embed script when it is served. */
+export type TribesEmbedConfig = {
+    origin: string;
+    framePath: string;
+    mountId: string;
+    name: string;
+    status: TribesEmbedStatus | null;
+};
+
+/** A message from the embed frame to the embed script on the host page. */
+export type TribesEmbedMessage = {
+    source: 'orb-tribes';
+    type: 'ready' | 'close' | 'error';
+};
+
+/** Data for the embed frame page at `/tribes/pcrpg`. */
+export type TribesEmbedPageData = {
+    hideChrome: boolean;
+    server: LegacyTribesServerDetail | null;
+};
+
+/** An external Tribes resource; defunct links are shown struck through. */
+export type TribesLink = {
+    label: string;
+    href: string;
+    defunct?: boolean;
+};
+
+/** Data for the `/tribes` page. */
+export type TribesPageData = {
+    links: TribesLink[];
+};
+
+/** A column the server list can be sorted by. */
+export type TribesSortKey = 'name' | 'ping' | 'game' | 'map' | 'currentPlayers' | 'mods';
+
+/** A server list column header; only sortable columns have a key. */
+export type TribesColumn = {
+    label: string;
+    key?: TribesSortKey;
+};
+
+/** Props for the server detail modal. */
+export type TribesServerModalProps = {
+    server: LegacyTribesServerDetail;
+    onClose: () => void;
+    embedded?: boolean;
+};
+
+/** A VGS menu entry: opens a submenu, or plays a voice clip and/or posts a chat phrase. */
+export type TribesVgsItem = {
+    key: string;
+    label: string;
+    phrase?: string;
+    sound?: string;
+    subMenu?: string;
+};
+
+/** A page of the VGS voice menu. */
+export type TribesVgsMenu = {
+    id: string;
+    title: string;
+    items: TribesVgsItem[];
+}; 

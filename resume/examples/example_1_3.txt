@@ -1,0 +1,311 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { slide, fade } from 'svelte/transition';
+	import ServerModal from './ServerModal.svelte';
+	import type {
+		LegacyTribesListServer,
+		LegacyTribesMasterResponse,
+		LegacyTribesServerDetail,
+		TribesColumn,
+		TribesSortKey
+	} from '$lib/types/tribes';
+
+	const columns: TribesColumn[] = [
+		{ label: 'Conn' },
+		{ label: 'Status' },
+		{ label: 'Server Name', key: 'name' },
+		{ label: 'Ping', key: 'ping' },
+		{ label: 'Type', key: 'game' },
+		{ label: 'Mission', key: 'map' },
+		{ label: 'Players', key: 'currentPlayers' },
+		{ label: 'Server Type/Mods', key: 'mods' }
+	];
+
+	let serverList = $state<LegacyTribesListServer[]>([]);
+	let serverData = $state<LegacyTribesServerDetail | null>(null);
+	let sortKey = $state<TribesSortKey | null>(null);
+	let sortDirection = $state(1);
+	let loading = $state(true);
+	let randomBg = $state(1);
+	let selectSound: HTMLAudioElement | undefined = $state();
+
+	const totalPlayers = $derived(
+		serverList.reduce((total, server) => total + server.currentPlayers, 0)
+	);
+
+	function sortValue(server: LegacyTribesListServer, key: TribesSortKey): string | number {
+		if (key === 'game') return server.server.game;
+		if (key === 'mods') return server.server.mods?.trim() || 'base';
+		return server[key];
+	}
+
+	/** Sorts the list by a column, flipping direction when the same column is chosen again. */
+	function sort(column: TribesSortKey) {
+		if (sortKey === column) {
+			sortDirection = -sortDirection;
+		} else {
+			sortKey = column;
+			sortDirection = 1;
+		}
+		serverList = [...serverList].sort((a, b) => {
+			const aValue = sortValue(a, column);
+			const bValue = sortValue(b, column);
+			if (aValue < bValue) return -sortDirection;
+			if (aValue > bValue) return sortDirection;
+			return 0;
+		});
+	}
+
+	async function openModal(address: string) {
+		const response = await fetch(`/api/tribes/${address}`);
+		if (!response.ok) return;
+		serverData = await response.json();
+	}
+
+	function selectServer(address: string) {
+		openModal(address);
+		window.location.hash = address;
+		selectSound?.play().catch(() => {});
+	}
+
+	function closeModal() {
+		serverData = null;
+		history.replaceState(null, '', ' ');
+	}
+
+	onMount(async () => {
+		try {
+			const response = await fetch('/api/tribes/master');
+			const master: LegacyTribesMasterResponse = await response.json();
+			serverList = master.servers.sort((a, b) => b.currentPlayers - a.currentPlayers);
+			randomBg = Math.floor(Math.random() * 3) + 1;
+			const hashAddress = window.location.hash.slice(1);
+			if (hashAddress && serverList.some((s) => s.address === hashAddress)) openModal(hashAddress);
+		} catch (e) {
+			console.error('Failed to fetch server list:', e);
+		} finally {
+			loading = false;
+		}
+	});
+</script>
+
+<audio bind:this={selectSound} src="/audio/Button4.wav" preload="auto"></audio>
+
+{#if serverData}
+<ServerModal bind:server={serverData} onClose={closeModal} />
+{/if}
+
+{#if loading}
+<div class="space-y-3 py-6 text-center">
+    <div class="mx-auto h-8 w-full max-w-md overflow-hidden"
+        style="background: #000; border: 1px solid var(--bright-green);">
+        <div class="h-full w-full animate-[loadingBar_3.2s_cubic-bezier(0.2,0.8,0.2,1)_forwards]"
+            style="background: var(--dark-green); transform-origin: left;"></div>
+    </div>
+
+    <p class="text-xs font-bold uppercase tracking-wide text-shadow-2xs" style="color: var(--dark-orange);">
+        Establishing uplink with satellite network...
+    </p>
+</div>
+{:else}
+<div in:slide={{ duration: 400 }}>
+    <p class="counts" in:fade={{ duration: 400 }}>
+        <strong>{totalPlayers}</strong> players online in <strong>{serverList.length}</strong> servers
+    </p>
+</div>
+
+<div in:slide={{ duration: 500, delay: 300 }}>
+    <div in:fade={{ duration: 500, delay: 300 }}>
+        <table id="tribesMasterList" class="green-border bg{randomBg}" width="100%" border="0">
+            <thead>
+                <tr>
+                    {#each columns as column (column.label)}
+                    <th>
+                        {#if column.key}
+                        {@const key = column.key}
+                        <button type="button" class="cursor-pointer uppercase btn-link" onclick={()=> sort(key)}
+                            >
+                            {column.label}
+                        </button>
+                        {:else}
+                        {column.label}
+                        {/if}
+                    </th>
+                    {/each}
+                </tr>
+            </thead>
+            <tbody>
+                {#each serverList as server (server.address)}
+                <tr role="button" tabindex="0" onclick={()=> selectServer(server.address)}
+                    onkeydown={(e) => {
+                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                    e.preventDefault();
+                    selectServer(server.address);
+                    }}
+                    >
+                    <td>
+                        <div class="conn {server.ping < 75 ? 'good' : server.ping < 100 ? 'okay' : 'bad'}"></div>
+                    </td>
+                    <td class="status">
+                        {#if server.server.needpass}
+                        <img src="/images/tribes/tribes-server-locked.gif" alt="Server Locked" />
+                        {/if}
+                        {#if server.server.dedicated}
+                        <img src="/images/tribes/tribes-server-dedicated.gif" alt="Dedicated Server" />
+                        {/if}
+                    </td>
+                    <td class="name block">{server.name}</td>
+                    <td>{server.ping}</td>
+                    <td>{server.server.game}</td>
+                    <td>{server.map}</td>
+                    <td>{server.currentPlayers}/{server.maxPlayers}</td>
+                    <td class="block">{server.server.mods?.trim() || 'base'}</td>
+                </tr>
+                {/each}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/if}
+
+<style lang="scss">
+    :root {
+        --bright-green: #3cec07;
+        --dark-green: #336600;
+        --light-orange: #ffd07b;
+        --dark-orange: #d88e00;
+    }
+
+    .counts {
+        margin: 0 0 10px;
+        text-align: center;
+
+        strong {
+            color: #fff;
+        }
+    }
+
+    #tribesMasterList {
+        text-align: center;
+        border-collapse: collapse;
+        position: relative;
+        background: #000 top right;
+        background-size: contain;
+        background-repeat: no-repeat;
+        box-shadow: 0 0 8px #000;
+        font-size: 13px;
+        color: var(--dark-orange);
+        padding: 2px;
+        z-index: 1;
+        cursor: url('/images/tribes/tribes-hand.cur'), default;
+
+        &.bg1 {
+            background-image: url('/images/tribes/tribesbg1.gif');
+        }
+
+        &.bg2 {
+            background-image: url('/images/tribes/tribesbg2.gif');
+        }
+
+        &.bg3 {
+            background-image: url('/images/tribes/tribesbg3.gif');
+        }
+
+        th {
+            background-color: #002800;
+            padding: 5px;
+            text-transform: uppercase;
+            font-size: 10px;
+            cursor: pointer;
+            text-shadow: -1px 1px 0px #000;
+
+            button {
+                color: var(--light-orange);
+            }
+        }
+
+        tr:hover {
+            color: #fff;
+        }
+
+        td {
+            border: 1px solid var(--dark-green);
+            padding: 2px 5px;
+        }
+
+        .name {
+            white-space: nowrap;
+        }
+
+        .status img {
+            display: inline-block;
+        }
+
+        .conn {
+            border-radius: 100%;
+            height: 10px;
+            aspect-ratio: 1;
+            display: block;
+            margin: 0 auto;
+
+            &.good {
+                background-color: var(--bright-green);
+            }
+
+            &.okay {
+                background-color: #f4ca3d;
+            }
+
+            &.bad {
+                background-color: red;
+            }
+        }
+    }
+
+    .green-border {
+        outline: 1px solid var(--bright-green);
+        position: relative;
+        z-index: 1;
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0 -4px;
+            border-left: 1px solid var(--bright-green);
+            border-right: 1px solid var(--bright-green);
+            z-index: -1;
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: -4px 0;
+            border-top: 1px solid var(--bright-green);
+            border-bottom: 1px solid var(--bright-green);
+            z-index: -1;
+        }
+    }
+
+    @media (max-width: 900px) {
+
+        #tribesMasterList tr *:nth-child(5),
+        #tribesMasterList tr *:nth-child(2),
+        #tribesMasterList tr *:nth-child(1) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 800px) {
+        #tribesMasterList tr *:nth-child(4) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 700px) {
+
+        #tribesMasterList tr *:nth-child(8),
+        #tribesMasterList tr *:nth-child(6) {
+            display: none;
+        }
+    }
+</style>

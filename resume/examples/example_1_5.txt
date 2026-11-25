@@ -1,0 +1,743 @@
+// lib/server/tribes.ts
+import dgram from 'node:dgram';
+import { randomInt } from 'node:crypto';
+import type {
+	LegacyTribesMasterResponse,
+	LegacyTribesServerDetail,
+	LegacyTribesTeam,
+	TribesColumnTable,
+	TribesEmbedServer,
+	TribesHuffmanNode,
+	TribesLink,
+	TribesMaster,
+	TribesMasterQueryResult,
+	TribesPlayer,
+	TribesScoreboard,
+	TribesServer,
+	TribesServerInfo,
+	TribesStatus
+} from '$lib/types/tribes';
+
+export const TRIBES_MASTERS = [
+	't1m1.tribes1.co:28000',
+	't1m2.tribes1.co:28000',
+	't1m3.tribes1.co:28000',
+	't1m1.pu.net:28000',
+	't1m2.pu.net:28000',
+	't1m3.pu.net:28000'
+];
+
+/** Custom Embeds for Orb Partners **/
+export const TRIBES_EMBEDS = {
+	pcrpg: {
+		address: '3.137.189.137:28001',
+		name: "Particle's Custom RPG",
+		framePath: '/tribes/pcrpg',
+		mountId: 'orb-tribes-pcrpg'
+	}
+} satisfies Record<string, TribesEmbedServer>;
+
+export const TRIBES_LINKS: TribesLink[] = [
+	{ label: "Particle's Custom RPG", href: 'https://www.pcrpg.org/' },
+	{ label: 'Annihilation Mod', href: 'https://www.annihilation.info/' },
+	{
+		label: 'Starsiege: Tribes - TheExiled Library',
+		href: 'https://library.theexiled.pwnageservers.com/category.php?id=167'
+	},
+	{
+		label: 'Tribes 1 Resource Thread - TribalWar',
+		href: 'https://www.tribalwar.com/forums/showthread.php?t=607313'
+	},
+	{
+		label: 'Tribes 1 Links Thread - TribalWar',
+		href: 'https://www.tribalwar.com/forums/showthread.php?t=225377'
+	},
+	{
+		label: 'Scripts for Tribes 1.40 - TribalWar',
+		href: 'https://www.tribalwar.com/forums/showthread.php?t=607365'
+	},
+	{ label: 'playt1.com - How to Get Back In', href: 'https://playt1.com/' },
+	{ label: 'Tribes 1 Demo Archive - twdemos', href: 'https://twdemos.iateyourbaby.com/' },
+	{ label: 'Starsiege: Tribes - ModDB', href: 'https://www.moddb.com/games/tribes' },
+	{
+		label: 'Starsiege: Tribes - PCGamingWiki',
+		href: 'https://www.pcgamingwiki.com/wiki/Starsiege:_Tribes'
+	},
+	{
+		label: 'Starsiege: Tribes - Wikipedia',
+		href: 'https://en.wikipedia.org/wiki/Starsiege:_Tribes'
+	},
+	{ label: 'tribes1game.com - Community Hub', href: 'http://www.tribes1game.com/', defunct: true },
+	{ label: 'tribesmasterserver.com', href: 'https://www.tribesmasterserver.com/', defunct: true },
+	{
+		label: 'Tribes 1 Master Server Query - maxogc.net',
+		href: 'https://www.maxogc.net/tribes/master/index.php',
+		defunct: true
+	},
+	{ label: 't1m1.pu.net', href: 'https://t1m1.pu.net/', defunct: true }
+];
+
+/** Huffman frequencies and tree are based on the original Tribes 1.40 source code, used by Torque Engine's HuffmanProcessor. **
+const HUFF_FREQS = [
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 329, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	2809, 68, 0, 27, 0, 58, 3, 62, 4, 7, 0, 0, 15, 65, 554, 3, 394, 404, 189, 117, 30, 51, 27, 15, 34,
+	32, 80, 1, 142, 3, 142, 39, 0, 144, 125, 44, 122, 275, 70, 135, 61, 127, 8, 12, 113, 246, 122, 36,
+	185, 1, 149, 309, 335, 12, 11, 14, 54, 151, 0, 0, 2, 0, 0, 211, 0, 2090, 344, 736, 993, 2872, 701,
+	605, 646, 1552, 328, 305, 1240, 735, 1533, 1713, 562, 3, 1775, 1149, 1469, 979, 407, 553, 59, 279,
+	31, 0, 0, 0, 68, 0
+];
+
+const SCORE_PLACEHOLDERS = new Set(['%n', '%t', '%p', '%l']);
+
+/** Reads the byte-aligned fields used by master server and GameSpy replies. */
+class PacketReader {
+	private buf: Buffer;
+	private pos = 0;
+
+	constructor(buf: Buffer) {
+		this.buf = buf;
+	}
+
+	private need(n: number): void {
+		if (this.pos + n > this.buf.length) throw new Error('Unexpected end of packet');
+	}
+
+	byte(): number {
+		this.need(1);
+		return this.buf[this.pos++];
+	}
+
+	u16le(): number {
+		this.need(2);
+		const value = this.buf.readUInt16LE(this.pos);
+		this.pos += 2;
+		return value;
+	}
+
+	u16be(): number {
+		this.need(2);
+		const value = this.buf.readUInt16BE(this.pos);
+		this.pos += 2;
+		return value;
+	}
+
+	pascal(): string {
+		const length = this.byte();
+		this.need(length);
+		const value = this.buf.toString('latin1', this.pos, this.pos + length);
+		this.pos += length;
+		return value;
+	}
+
+	addressPort(): string {
+		if (this.byte() !== 6) throw new Error('Invalid address length');
+		const ip = [this.byte(), this.byte(), this.byte(), this.byte()].join('.');
+		return `${ip}:${this.u16le()}`;
+	}
+}
+
+let huffNodes: TribesHuffmanNode[] | null = null;
+
+/** Builds (once) the Huffman tree Tribes uses to compress native query strings. */
+function getHuffNodes(): TribesHuffmanNode[] {
+	if (huffNodes) return huffNodes;
+
+	const isAlnum = (c: number) =>
+		(c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122);
+	const leafPop = Array.from(
+		{ length: 256 },
+		(_, i) => (HUFF_FREQS[i] ?? 0) + 1 + (isAlnum(i) ? 1 : 0)
+	);
+	const nodes: TribesHuffmanNode[] = [{ pop: 0, zero: 0, one: 0 }];
+	const roots = Array.from({ length: 256 }, (_, i) => -(i + 1));
+	const popOf = (index: number) => (index < 0 ? leafPop[-(index + 1)] : nodes[index].pop);
+
+	for (let count = 256; count > 1; count--) {
+		let min1 = 0xfffffffe;
+		let min2 = 0xffffffff;
+		let idx1 = -1;
+		let idx2 = -1;
+		for (let i = 0; i < count; i++) {
+			const pop = popOf(roots[i]);
+			if (pop < min1) {
+				min2 = min1;
+				idx2 = idx1;
+				min1 = pop;
+				idx1 = i;
+			} else if (pop < min2) {
+				min2 = pop;
+				idx2 = i;
+			}
+		}
+
+		nodes.push({
+			pop: popOf(roots[idx1]) + popOf(roots[idx2]),
+			zero: roots[idx1],
+			one: roots[idx2]
+		});
+
+		const merge = Math.min(idx1, idx2);
+		const nuke = Math.max(idx1, idx2);
+		roots[merge] = nodes.length - 1;
+		if (nuke !== count - 1) roots[nuke] = roots[count - 1];
+	}
+
+	nodes[0] = nodes[roots[0]];
+	huffNodes = nodes;
+	return nodes;
+}
+
+/** Reads the bit-packed, Huffman-compressed fields used by native query replies. */
+class BitReader {
+	private buf: Buffer;
+	private pos = 0;
+
+	constructor(buf: Buffer) {
+		this.buf = buf;
+	}
+
+	get remaining(): number {
+		return this.buf.length * 8 - this.pos;
+	}
+
+	bits(n: number): number {
+		if (n > this.remaining) throw new Error('Unexpected end of packet');
+		let value = 0;
+		for (let i = 0; i < n; i++) {
+			if (this.buf[this.pos >> 3] & (1 << (this.pos & 7))) value += 2 ** i;
+			this.pos++;
+		}
+		return value;
+	}
+
+	huffString(): string {
+		const compressed = this.bits(1) === 1;
+		let length = this.bits(8);
+		if (length === 0) return '';
+
+		const out: number[] = [];
+		if (!compressed) {
+			for (let i = 0; i < length; i++) out.push(this.bits(8));
+			return String.fromCharCode(...out);
+		}
+
+		const nodes = getHuffNodes();
+		let skip32 = false;
+		for (let i = 0; i < length; i++) {
+			let index = 0;
+			while (index >= 0) index = this.bits(1) ? nodes[index].one : nodes[index].zero;
+			const symbol = -(index + 1);
+			out[i] = symbol;
+			if (i === 0 && symbol >= 128) {
+				i--;
+				length--;
+				skip32 = true;
+			}
+		}
+		if (skip32) this.bits(32);
+		return String.fromCharCode(...out.slice(0, length));
+	}
+}
+
+/** Sends one UDP packet and feeds replies to `onMessage` until it returns true or the timeout passes; resolves with the round-trip ping. */
+function exchange(
+	address: string,
+	packet: Buffer,
+	timeoutMs: number,
+	onMessage: (msg: Buffer) => boolean
+): Promise<number> {
+	const separator = address.lastIndexOf(':');
+	const host = address.slice(0, separator);
+	const port = Number(address.slice(separator + 1));
+	if (separator < 1 || !Number.isInteger(port) || port < 1 || port > 65535) {
+		return Promise.reject(new Error(`Invalid address: ${address}`));
+	}
+
+	return new Promise((resolve, reject) => {
+		const socket = dgram.createSocket('udp4');
+		const started = performance.now();
+		let ping: number | null = null;
+		let done = false;
+
+		const finish = (err?: Error) => {
+			if (done) return;
+			done = true;
+			clearTimeout(timer);
+			socket.close();
+			if (err) reject(err);
+			else resolve(ping ?? 0);
+		};
+
+		const timer = setTimeout(() => {
+			if (ping === null) finish(new Error(`Timed out: ${address}`));
+			else finish();
+		}, timeoutMs);
+
+		socket.on('error', (err) => finish(err));
+		socket.on('message', (msg) => {
+			try {
+				const complete = onMessage(msg);
+				ping ??= Math.round(performance.now() - started);
+				if (complete) finish();
+			} catch (err) {
+				finish(err instanceof Error ? err : new Error(String(err)));
+			}
+		});
+		socket.connect(port, host, (err?: Error) => {
+			if (err) finish(err);
+			else socket.send(packet, (sendErr) => sendErr && finish(sendErr));
+		});
+	});
+}
+
+/** Asks a master server for its list of game servers, collecting every packet of a multi-packet reply. */
+export async function queryMaster(
+	address: string,
+	timeoutMs = 3000
+): Promise<TribesMasterQueryResult> {
+	const key = randomInt(0, 0x10000);
+	const packet = Buffer.from([0x10, 0x03, 0xff, 0x00, key & 0xff, key >> 8, 0x00, 0x00]);
+	const received = new Set<number>();
+	const servers = new Set<string>();
+	let name = '';
+	let motd = '';
+
+	const ping = await exchange(address, packet, timeoutMs, (msg) => {
+		const r = new PacketReader(msg);
+		if (r.byte() !== 0x10 || r.byte() !== 0x06) throw new Error('Invalid master response');
+		const packetNumber = r.byte();
+		const packetTotal = r.byte();
+		if (!packetNumber || !packetTotal || packetNumber > packetTotal)
+			throw new Error('Invalid packet sequence');
+		if (r.u16le() !== key) throw new Error('Key mismatch');
+		if (r.byte() !== 0x00 || r.byte() !== 0x66) throw new Error('Invalid master header');
+
+		const packetName = r.pascal();
+		const packetMotd = r.pascal();
+		if (received.size === 0) {
+			name = packetName;
+			motd = packetMotd;
+		}
+
+		const count = r.u16be();
+		for (let i = 0; i < count; i++) servers.add(r.addressPort());
+
+		received.add(packetNumber);
+		return received.size >= packetTotal;
+	});
+
+	return { address, name, motd, ping, servers: [...servers] };
+}
+
+/** Queries a game server with the GameSpy-style query, which reports per-player ping, packet loss and team. */
+async function queryGameSpy(address: string, timeoutMs = 2000): Promise<TribesServer> {
+	const key = randomInt(0, 0x10000);
+	const packet = Buffer.from([0x62, key & 0xff, key >> 8]);
+	let info = null as TribesServerInfo | null;
+
+	const ping = await exchange(address, packet, timeoutMs, (msg) => {
+		const r = new PacketReader(msg);
+		if (r.byte() !== 0x63) throw new Error('Invalid server response');
+		if (r.u16le() !== key) throw new Error('Key mismatch');
+		if (r.byte() !== 0x62) throw new Error('Invalid server header');
+
+		const game = r.pascal();
+		const version = r.pascal();
+		const name = r.pascal();
+		const dedicated = r.byte() === 1;
+		const password = r.byte() === 1;
+		const numPlayers = r.byte();
+		const maxPlayers = r.byte();
+		const cpuSpeed = r.u16le();
+		const mod = r.pascal();
+		const serverType = r.pascal();
+		const mission = r.pascal();
+		const serverInfo = r.pascal();
+		const numTeams = r.byte();
+		const teamScoreHeader = r.pascal();
+		const playerScoreHeader = r.pascal();
+
+		const teams = Array.from({ length: numTeams }, () => ({ name: r.pascal(), score: r.pascal() }));
+		const players = Array.from({ length: numPlayers }, () => {
+			const playerPing = r.byte();
+			const pl = r.byte();
+			const team = r.byte();
+			return { name: r.pascal(), score: r.pascal(), ping: playerPing, pl, team };
+		});
+
+		info = {
+			game,
+			version,
+			name,
+			dedicated,
+			password,
+			numPlayers,
+			maxPlayers,
+			cpuSpeed,
+			mod,
+			serverType,
+			mission,
+			info: serverInfo,
+			teamScoreHeader,
+			playerScoreHeader,
+			teams,
+			players
+		};
+		return true;
+	});
+
+	if (!info) throw new Error(`No data: ${address}`);
+	return { address, ping, ...info };
+}
+
+/** Matches a scoreboard header column, allowing for the leading column-width byte Tribes prefixes. */
+function matchHeaderCol(col: string, target: string): boolean {
+	const lower = col.toLowerCase();
+	return lower === target || (col.length > 1 && lower.slice(1) === target);
+}
+
+/** Turns native scoreboard rows into teams and players, swapping ping and PL values for `%p` and `%l` placeholders. */
+function parseScoreEntries(entries: string[]): TribesScoreboard {
+	const teams: TribesScoreboard['teams'] = [];
+	const players: TribesScoreboard['players'] = [];
+	let teamCol = -1;
+	let pingCol = -1;
+	let plCol = -1;
+
+	for (const entry of entries) {
+		if (entry.length < 2) continue;
+		const section = entry[0];
+		const rowType = entry[1];
+		const data = entry.slice(2);
+		if (!data) continue;
+
+		if (rowType === '1') {
+			if (section === '1') {
+				const cols = data
+					.split('\t')
+					.slice(1)
+					.map((c) => c.trim());
+				teamCol = cols.findIndex((c) => matchHeaderCol(c, 'team'));
+				pingCol = cols.findIndex((c) => matchHeaderCol(c, 'ping'));
+				plCol = cols.findIndex((c) => matchHeaderCol(c, 'pl'));
+			}
+			continue;
+		}
+
+		const tab = data.indexOf('\t');
+		const name = (tab === -1 ? data : data.slice(0, tab)).trim();
+		const rest = tab === -1 ? '' : data.slice(tab + 1);
+
+		if (section === '0' && teams.length < 255) {
+			teams.push({ name, score: `%t\t${rest}` });
+		} else if (section === '1') {
+			const fields = rest.split('\t');
+			const player: TribesPlayer = { name, team: 255, score: '', ping: 0, pl: 0 };
+			if (teamCol >= 0 && teamCol < fields.length) {
+				const index = teams.findIndex((t) => t.name === fields[teamCol].trim());
+				if (index >= 0) player.team = index;
+			}
+			if (pingCol >= 0 && pingCol < fields.length) {
+				player.ping = Number.parseInt(fields[pingCol], 10) || 0;
+				fields[pingCol] = '%p';
+			}
+			if (plCol >= 0 && plCol < fields.length) {
+				player.pl = Number.parseInt(fields[plCol], 10) || 0;
+				fields[plCol] = '%l';
+			}
+			player.score = `%n\t${fields.join('\t')}`;
+			players.push(player);
+		}
+	}
+
+	return { teams, players };
+}
+
+/** Queries a game server with the native Tribes query, which carries the full scoreboard rows. */
+async function queryNative(address: string, timeoutMs = 2000): Promise<TribesServer> {
+	const key = randomInt(0, 0x10000);
+	const packet = Buffer.from([0x10, 0x07, 0xff, 0x00, key & 0xff, key >> 8, 0x00, 0x00]);
+	let info = null as TribesServerInfo | null;
+
+	const ping = await exchange(address, packet, timeoutMs, (msg) => {
+		if (msg.length < 8 || msg[0] !== 0x10 || msg[1] !== 0x08)
+			throw new Error('Invalid server response');
+		if (msg.readUInt16LE(4) !== key) throw new Error('Key mismatch');
+
+		const r = new BitReader(msg.subarray(8));
+		r.bits(16);
+		const game = r.huffString();
+		const version = r.huffString();
+		const name = r.huffString();
+		const numPlayers = r.bits(8);
+		const maxPlayers = r.bits(8);
+		const mission = r.huffString();
+		const dedicated = r.bits(8) !== 0;
+		const password = r.bits(8) !== 0;
+		const cpuSpeed = r.bits(32);
+		const mod = r.huffString();
+		const serverType = r.huffString();
+		const serverInfo = r.huffString();
+		const teamScoreHeader = r.huffString();
+		const playerScoreHeader = r.huffString();
+
+		const entries: string[] = [];
+		while (r.remaining > 9 && entries.length < 256) {
+			const entry = r.huffString();
+			if (!entry) break;
+			entries.push(entry);
+		}
+
+		info = {
+			game,
+			version,
+			name,
+			dedicated,
+			password,
+			numPlayers,
+			maxPlayers,
+			cpuSpeed,
+			mod,
+			serverType,
+			mission,
+			info: serverInfo,
+			teamScoreHeader,
+			playerScoreHeader,
+			...parseScoreEntries(entries)
+		};
+		return true;
+	});
+
+	if (!info) throw new Error(`No data: ${address}`);
+	return { address, ping, ...info };
+}
+
+/** Runs the native and GameSpy queries together, keeping the native scoreboard and taking ping, PL and team from GameSpy. */
+export async function queryServer(address: string, timeoutMs = 2000): Promise<TribesServer> {
+	const [native, gamespy] = await Promise.allSettled([
+		queryNative(address, timeoutMs),
+		queryGameSpy(address, timeoutMs)
+	]);
+
+	if (native.status === 'rejected') {
+		if (gamespy.status === 'fulfilled') return gamespy.value;
+		throw native.reason;
+	}
+	if (gamespy.status === 'rejected') return native.value;
+
+	const result = native.value;
+	const gamespyPlayers = new Map(gamespy.value.players.map((p) => [p.name, p]));
+	for (const player of result.players) {
+		const match = gamespyPlayers.get(player.name);
+		if (!match) continue;
+		player.ping = match.ping;
+		player.pl = match.pl;
+		player.team = match.team;
+	}
+	if (gamespy.value.teams.length > result.teams.length) result.teams = gamespy.value.teams;
+
+	return result;
+}
+
+/** Queries every master server, then every game server they list, into one combined status. */
+export async function fetchTribesStatus(masters: string[] = TRIBES_MASTERS): Promise<TribesStatus> {
+	const masterResults = await Promise.allSettled(masters.map((m) => queryMaster(m)));
+
+	const masterList: TribesMaster[] = masters.map((address, i) => {
+		const result = masterResults[i];
+		if (result.status === 'fulfilled') {
+			const { name, motd, ping, servers } = result.value;
+			return { address, name, motd, ping, serverCount: servers.length, online: true };
+		}
+		return { address, name: '', motd: '', ping: null, serverCount: 0, online: false };
+	});
+
+	const addresses = new Set(
+		masterResults.flatMap((r) => (r.status === 'fulfilled' ? r.value.servers : []))
+	);
+	if (addresses.size === 0) throw new Error('No master servers responded');
+
+	const serverResults = await Promise.allSettled([...addresses].map((a) => queryServer(a)));
+	const servers = serverResults
+		.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+		.sort((a, b) => b.numPlayers - a.numPlayers || a.name.localeCompare(b.name));
+
+	return {
+		masters: masterList,
+		servers,
+		unreachable: addresses.size - servers.length,
+		totalPlayers: servers.reduce((sum, s) => sum + s.numPlayers, 0),
+		fetchedAt: new Date().toISOString()
+	};
+}
+
+/** Shapes the combined status into the `/api/tribes/master` response. */
+export function toLegacyMaster(status: TribesStatus): LegacyTribesMasterResponse {
+	return {
+		masters: status.masters,
+		servers: status.servers.map((s) => ({
+			address: s.address,
+			name: s.name,
+			ping: s.ping,
+			map: s.mission,
+			currentPlayers: s.numPlayers,
+			maxPlayers: s.maxPlayers,
+			server: {
+				game: s.game,
+				mods: s.mod,
+				needpass: s.password,
+				dedicated: s.dedicated
+			}
+		})),
+		totalPlayers: status.totalPlayers,
+		fetchedAt: status.fetchedAt
+	};
+}
+
+function splitColumns(row: string): string[] {
+	return row.split('\t').map((c) => c.replace(/[^\x20-\x7E]/g, '').trim());
+}
+
+/** Picks the score out of a score row using its header, or joins the leftover columns when there is no Score column. */
+function extractScore(header: string, row: string, skip: string[]): string {
+	const columns = splitColumns(header);
+	const values = splitColumns(row);
+
+	const scoreIndex = columns.findIndex((c) => /score/i.test(c));
+	if (scoreIndex >= 0) return values[scoreIndex] ?? '';
+
+	return values
+		.filter(
+			(v, i) =>
+				v &&
+				!SCORE_PLACEHOLDERS.has(v) &&
+				!skip.includes(v) &&
+				!/^(team|name|ping|pl)$/i.test(columns[i] ?? '')
+		)
+		.join(' / ');
+}
+
+/** Splits free-form status text into a Status column, one column per `Key:` pair, and an unlabeled column for anything after the last value. */
+function splitStatus(statuses: string[]): TribesColumnTable {
+	const parsed = statuses.map((text) => {
+		const parts = text.split(/\b([A-Za-z]+):\s*/);
+		const fields = new Map<string, string>();
+		let extra = '';
+		for (let i = 1; i < parts.length; i += 2) {
+			let value = parts[i + 1]?.trim() ?? '';
+			if (i + 2 >= parts.length) {
+				const [first = '', ...rest] = value.split(/\s+/);
+				value = first;
+				extra = rest.join(' ');
+			}
+			fields.set(parts[i], value.replace(/,$/, '').trim());
+		}
+		return { prefix: parts[0].replace(/,\s*$/, '').trim(), fields, extra };
+	});
+
+	const keys = [...new Set(parsed.flatMap((p) => [...p.fields.keys()]))];
+	if (keys.length === 0) return { headers: ['Status'], rows: statuses.map((s) => [s]) };
+
+	const hasPrefix = parsed.some((p) => p.prefix);
+	const hasExtra = parsed.some((p) => p.extra);
+
+	return {
+		headers: [...(hasPrefix ? ['Status'] : []), ...keys, ...(hasExtra ? [''] : [])],
+		rows: parsed.map((p) => [
+			...(hasPrefix ? [p.prefix] : []),
+			...keys.map((k) => p.fields.get(k) ?? ''),
+			...(hasExtra ? [p.extra] : [])
+		])
+	};
+}
+
+/** Builds the RPG player table from the server's own header, dropping Team and expanding any status text into columns. */
+function buildPlayerColumns(s: TribesServer, teamName: (id: number) => string): TribesColumnTable {
+	const header = splitColumns(s.playerScoreHeader);
+	const expanded = s.players.map((p) =>
+		splitColumns(p.score).map((v) => {
+			if (v === '%n') return p.name;
+			if (v === '%t') return teamName(p.team);
+			if (v === '%p') return String(p.ping * 4);
+			if (v === '%l') return String(p.pl);
+			return v;
+		})
+	);
+
+	if (!header.some(Boolean)) {
+		return {
+			headers: ['Name', 'Ping', 'PL'],
+			rows: s.players.map((p) => [p.name, String(p.ping * 4), String(p.pl)])
+		};
+	}
+
+	const statusIndex = header.findIndex((h) => /^.?status$/i.test(h));
+	const keep = header
+		.map((h, i) => ({ h, i }))
+		.filter(({ h, i }) => h && i !== statusIndex && !/^.?team$/i.test(h));
+	const statuses = expanded.map((row) =>
+		[...(statusIndex >= 0 ? [row[statusIndex] ?? ''] : []), ...row.slice(header.length)]
+			.filter(Boolean)
+			.join(' ')
+	);
+	const status = statuses.some(Boolean) ? splitStatus(statuses) : { headers: [], rows: [] };
+
+	return {
+		headers: [...keep.map(({ h }) => h), ...status.headers],
+		rows: expanded.map((row, r) => [
+			...keep.map(({ i }) => row[i] ?? ''),
+			...(status.rows[r] ?? [])
+		])
+	};
+}
+
+/** Shapes one game server into the `/api/tribes/[ip]` response shown in the server modal. */
+export function toLegacyDetail(s: TribesServer): LegacyTribesServerDetail {
+	const teams: LegacyTribesTeam[] = s.teams.map((t, id) => ({
+		id,
+		name: t.name,
+		score: extractScore(s.teamScoreHeader, t.score, [t.name]),
+		playercount: s.players.filter((p) => p.team === id).length
+	}));
+
+	const unassigned = s.players.filter((p) => p.team >= teams.length);
+	for (const id of new Set(unassigned.map((p) => p.team))) {
+		teams.push({
+			id,
+			name: 'Observer',
+			score: '',
+			playercount: unassigned.filter((p) => p.team === id).length
+		});
+	}
+
+	const teamName = (id: number) => teams.find((t) => t.id === id)?.name ?? '';
+	const playerColumns = buildPlayerColumns(s, teamName);
+
+	return {
+		server: {
+			name: s.name,
+			address: s.address,
+			ping: s.ping,
+			packetLoss: 0,
+			map: s.mission,
+			description: ` ${s.info}`
+		},
+		game: {
+			game: s.game,
+			version: s.version,
+			mods: s.mod,
+			dedicated: s.dedicated,
+			needpass: s.password
+		},
+		teams,
+		playerColumns: playerColumns.headers,
+		players: s.players.map((p, i) => ({
+			name: p.name,
+			team: p.team,
+			score: extractScore(s.playerScoreHeader, p.score, [p.name, teamName(p.team)]),
+			ping: p.ping * 4,
+			packetLoss: p.pl,
+			columns: playerColumns.rows[i]
+		}))
+	};
+}                        

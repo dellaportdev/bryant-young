@@ -1,0 +1,142 @@
+// This is an excerpt of the global cache handler that handles all xhr based requests for my server.
+
+/** The `data` column of a `json_cache` row. */
+type CachedData<T> = { data: T };
+
+/** Any JSON value except null */
+type CacheableValue = Exclude<JsonValue, null>;
+
+/**
+ * Builds the cache key and rejects empty results
+ */
+function cacheKey(service: string, keyParts: string[]): string {
+    const key = buildKey(service, keyParts);
+    if (!key) throw new Error(`[cache] refusing to query with an empty key for service "${service}"`);
+    return key;
+}
+
+/**
+ * Returns a cached value if it is younger than both its stored TTL and `maxAgeMs`, otherwise null.
+ * Freshness is checked in SQL against the database clock, the same clock `cacheSet` stamps with.
+ */
+export async function cacheGet<T>(
+    service: string,
+    keyParts: string[],
+    maxAgeMs?: number
+): Promise<T | null> {
+    try {
+        const key = cacheKey(service, keyParts);
+        const [row] = await sql<CachedData<T>[]>`
+            SELECT data
+            FROM json_cache
+            WHERE key = ${key}
+              AND now() - fetched_at <= LEAST(ttl_ms, ${maxAgeMs ?? null}::float8) * interval '1 millisecond'
+            LIMIT 1
+        `;
+        return row ? row.data : null;
+    } catch (err) {
+        console.error('[cache] cacheGet failed:', err);
+        return null;
+    }
+}
+
+/** Returns a cached value regardless of age, for falling back when a refresh fails. */
+export async function cacheGetStale<T>(service: string, keyParts: string[]): Promise<T | null> {
+    try {
+        const key = cacheKey(service, keyParts);
+        const [row] = await sql<CachedData<T>[]>`
+            SELECT data FROM json_cache WHERE key = ${key} LIMIT 1
+        `;
+        return row ? row.data : null;
+    } catch (err) {
+        console.error('[cache] cacheGetStale failed:', err);
+        return null;
+    }
+}
+
+/**
+ * Stores a value, replacing any entry with the same key.
+ */
+export async function cacheSet<T extends CacheableValue>(
+    service: string,
+    keyParts: string[],
+    data: T,
+    ttlMs: number
+): Promise<void> {
+    try {
+        const key = cacheKey(service, keyParts);
+        if (!Number.isSafeInteger(ttlMs) || ttlMs <= 0) throw new Error(`[cache] invalid ttlMs ${ttlMs} for "${key}"`);
+        await sql`
+            INSERT INTO json_cache (key, data, fetched_at, ttl_ms)
+            VALUES (${key}, ${sql.json(data)}, now(), ${ttlMs})
+            ON CONFLICT (key) DO UPDATE
+            SET data       = EXCLUDED.data,
+                fetched_at = EXCLUDED.fetched_at,
+                ttl_ms     = EXCLUDED.ttl_ms
+        `;
+    } catch (err) {
+        console.error('[cache] cacheSet failed:', err);
+    }
+}
+
+export async function cacheDelete(service: string, keyParts: string[]): Promise<void> {
+    try {
+        const key = cacheKey(service, keyParts);
+        await sql`DELETE FROM json_cache WHERE key = ${key}`;
+    } catch (err) {
+        console.error('[cache] cacheDelete failed:', err);
+    }
+}
+
+/**
+ * Deletes every entry whose key starts with the given service and key parts.
+ */
+export async function cacheDeleteByPrefix(service: string, prefixParts: string[]): Promise<void> {
+    try {
+        const keyPrefix = cacheKey(service, prefixParts).replace(/[\\%_]/g, '\\$&');
+        await sql`DELETE FROM json_cache WHERE key LIKE ${`${keyPrefix}%`}`;
+    } catch (err) {
+        console.error('[cache] cacheDeleteByPrefix failed:', err);
+    }
+}
+
+/** Fetches currently running, by cache key, so simultaneous cache misses share a single request. */
+const inFlight = new Map<string, Promise<unknown>>();
+
+/**
+ * Returns a fresh cached value, or runs `fetcher` once and caches its result.
+ * If the fetch fails, falls back to the last cached value unless `allowStale` is false.
+ * An empty key throws here, before `fetcher` runs, rather than caching under a bad key.
+ */
+export async function cacheFetch<T extends CacheableValue>(
+    service: string,
+    keyParts: string[],
+    ttlMs: number,
+    fetcher: () => Promise<T>,
+    allowStale = true
+): Promise<T> {
+    const cached = await cacheGet<T>(service, keyParts, ttlMs);
+    if (cached !== null) return cached;
+
+    const key = cacheKey(service, keyParts);
+    let request = inFlight.get(key) as Promise<T> | undefined;
+    if (!request) {
+        request = Promise.resolve()
+            .then(fetcher)
+            .then(async (data) => {
+                await cacheSet(service, keyParts, data, ttlMs);
+                return data;
+            })
+            .finally(() => inFlight.delete(key));
+        inFlight.set(key, request);
+    }
+
+    try {
+        return await request;
+    } catch (err) {
+        if (!allowStale) throw err;
+        const stale = await cacheGetStale<T>(service, keyParts);
+        if (stale === null) throw err;
+        return stale;
+    }
+}

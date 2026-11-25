@@ -1,0 +1,109 @@
+<script lang="ts">
+	// routes/tribes/+page.svelte
+	import Container from '$lib/ThemeHandler.svelte';
+	import VgsMenu from './vgsMenu.svelte';
+	import ServerBrowser from './ServerBrowser.svelte';
+	import Icon from 'svelte-awesome';
+	import { faArrowUpRightFromSquare, faBan } from '@fortawesome/free-solid-svg-icons';
+	import type { TribesPageData } from '$lib/types/tribes';
+
+	let { data }: { data: TribesPageData } = $props();
+</script>
+
+<svelte:head>
+    <title>Orb - Tribes</title>
+    <meta name="description" content="Orb in Starseige:Tribes, the original game we were founded in." />
+</svelte:head>
+
+<Container>
+    <div class="relative">
+        <h1>
+            Tribes <p>the original</p>
+        </h1>
+        <div class="pointer-events-none absolute top-[10px] left-1/2 -translate-x-1/2 -translate-y-1/2 [&_*]:pointer-events-auto">
+            <VgsMenu />
+        </div>
+    </div>
+
+    <p>
+        Orb was founded in Tribes as well as contributed to several of the game's several widely used
+        mods such as Annhilation, Tribes RPG, and Shifter. There is not a lot of servers still online,
+        but the game is freeware and available to all to download and play.
+    </p>
+
+    <section class="mt-4">
+        <h2>Tribes 1 Realtime Master Server List</h2>
+        <ServerBrowser />
+    </section>
+
+    <section class="space-y-4">
+        <h2>Download</h2>
+        <p class="text-orb-highlight/75">
+            Note: Since tribes0.com has gone down, I am searching for updated archives of these files.
+        </p>
+
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_480px] xl:grid-cols-[minmax(0,1fr)_560px]">
+            <div class="space-y-4">
+                <div class="rounded border border-border-faint/60 bg-bg-deep/20 p-4">
+                    <a href="https://www.tribes0.com/FullTribes_1.41.zip" target="_blank" rel="noopener noreferrer" class="font-semibold text-orb-link hover:text-white">
+                        Download Original Tribes ↗
+                    </a>
+                    <p class="mt-2 mb-0 text-sm text-orb-highlight/70">
+                        114 MB — Bugs fixed and 1.41 patch by The Community<br />
+                        Game set 1.40v by GarageGames
+                    </p>
+                </div>
+
+                <div class="rounded border border-border-faint/60 bg-bg-deep/20 p-4">
+                    <a href="https://www.tribes0.com/Tribes_2015.zip" target="_blank" rel="noopener noreferrer" class="font-semibold text-orb-link hover:text-white">
+                        Download Tribes 2015 Version ↗
+                    </a>
+                    <p class="mt-2 mb-0 text-sm text-orb-highlight/70">
+                        349 MB — High Quality Textures and Interface.<br />
+                        Game set released by FSB-SPY
+                    </p>
+                </div>
+
+                <div class="rounded border border-border-faint/60 bg-bg-deep/20 p-4">
+                    <a href="https://www.pcrpg.org/main.php?action=viewpage&page=downloads&startdl=33" target="_blank" rel="noopener noreferrer" class="font-semibold text-orb-link hover:text-white">
+                        Download Tribes RPG ↗
+                    </a>
+                    <p class="mt-2 mb-0 text-sm text-orb-highlight/70">
+                        134 MB — Tribes RPG Starter pack<br />
+                        For Particle's Custom RPG.
+                        <a href="https://www.pcrpg.org/main.php?action=viewpage&page=downloads&viewfile=33" target="_blank" rel="noopener noreferrer" class="ml-1 text-orb-link hover:text-white">
+                            more info ↗
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="self-start rounded border border-border-faint/60 bg-bg-deep/20 p-2 shadow-panel">
+                <img src="/images/tribes/titanshot6.jpg" alt="Clan Orb Heavy Skin for Tribes" class="w-full rounded object-cover" />
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2>Links</h2>
+        <p class="text-orb-highlight/75">
+            Please note - Tribes is a game from 1998, many of these sites will fade away over time. I've
+            attempted to keep as many links to old resources here as possible.
+        </p>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {#each data.links as link (link.href)}
+                {#if link.defunct}
+                <span class="flex items-center gap-3 rounded border border-border-faint/30 bg-bg-deep/10 px-4 py-3 text-orb-highlight/25 line-through cursor-not-allowed select-none">
+                    <Icon data={faBan} class="shrink-0 text-[0.8rem]" />
+                    {link.label}
+                </span>
+                {:else}
+                <a href={link.href} target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 rounded border border-border-faint/60 bg-bg-deep/20 px-4 py-3 text-orb-link no-underline transition hover:border-border hover:text-white">
+                    <Icon data={faArrowUpRightFromSquare} class="shrink-0 text-[0.8rem] opacity-50" />
+                    {link.label}
+                </a>
+                {/if}
+            {/each}
+        </div>
+    </section>
+</Container>

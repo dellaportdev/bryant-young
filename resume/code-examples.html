@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="[scrollbar-gutter:stable]" style="visibility:hidden">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bryant Young - Code Examples</title>
+
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script data-goatcounter="https://bryantyoung.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: Inter, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --animate-swap: swap 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+
+            @keyframes swap {
+                from {
+                    opacity: 0;
+                    transform: translateY(4px);
+                }
+            }
+        }
+
+        /* Small shared pieces for the about boxes */
+
+        @utility chip {
+            @apply inline-flex items-center gap-1.5 rounded border border-neutral-300 px-2 text-xs leading-5;
+        }
+
+        @utility ext-link {
+            @apply inline-flex items-center gap-1.5 rounded border border-neutral-900 px-2.5 text-xs leading-6 hover:bg-neutral-900 hover:text-white;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-neutral-900 font-sans text-[15px] leading-normal antialiased">
+
+    <div class="mx-auto max-w-6xl px-4 py-8 print:p-0">
+
+        <header class="border-b border-neutral-900 pb-3">
+            <h1 class="text-2xl font-semibold tracking-tight">Bryant Young</h1>
+            <p class="text-neutral-600">Code Examples</p>
+            <a href="/resume/simple" class="inline-flex items-center gap-1.5 text-sm hover:text-neutral-500 print:hidden">
+                <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>Back to resume
+            </a>
+        </header>
+
+        <div id="layout" class="mt-8 grid gap-8 items-start md:grid-cols-[16rem_minmax(0,1fr)]">
+
+            <!-- Content for this generated based on main > sections -->
+            <nav id="nav" aria-label="Examples" class="space-y-6 text-sm md:sticky md:top-8 print:hidden"></nav>
+
+            <main>
+
+                <section data-example="1" hidden>
+                    <div class="rounded-lg border border-neutral-200 p-5">
+                        <h2 class="text-lg font-semibold">Legacy game live server browser</h2>
+                        <dl class="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-[10rem_1fr] [&>dt]:font-medium [&>dd]:text-neutral-700">
+                        <dt>What it is</dt>
+                        <dd>A real-time server browser for Starsiege: Tribes (1998) on clanorb.com. It queries game servers directly over UDP and provides a real-time recreation of the in-game server browser.
+                        </dd>
+                        <dt>My role</dt>
+                        <dd>Sole developer. UI, UX and CSS built by hand. Used AI to reverse engineering query
+                            protocols from the original game files.</dd>
+                        <dt>Highlights</dt>
+                        <dd>
+                            <ul class="list-disc space-y-1 pl-5">
+                                <li>Pixel-accurate recreation of the in-game server browser, using the original fonts, cursors, icons and
+                                    sounds, plus a mobile-responsive layout.</li>
+                                <li>Server list parsing built on a reverse-engineered UDP protocol from a decades-old codebase.</li>
+                                <li>PostgreSQL-backed cache for fast response times.</li>
+                                <li>Local REST API that reshapes incoming data for the frontend and doubles as an embeddable service for
+                                    outside websites.</li>
+                                <li>Accessible dialogs and full keyboard navigation.</li>
+                            </ul>
+                        </dd>
+                            <dt>Tech</dt>
+                            <dd class="flex flex-wrap gap-1.5">
+                                <span class="chip" data-icon="si:typescript">TypeScript</span>
+                                <span class="chip" data-icon="si:svelte">SvelteKit</span>
+                                <span class="chip" data-icon="fa-brands fa-node-js">Node.js</span>
+                                <span class="chip" data-icon="si:postgresql">PostgreSQL</span>
+                                <span class="chip" data-icon="fa-brands fa-sass">SCSS</span>
+                                <span class="chip" data-icon="si:tailwindcss">Tailwind</span>
+                            </dd>
+                            <dt>Links</dt>
+                            <dd class="flex flex-wrap gap-2">
+                                <a class="ext-link" href="https://clanorb.com/tribes" target="_blank" rel="noopener noreferrer">Live site<i class="fa-solid fa-arrow-up-right-from-square text-[10px]" aria-hidden="true"></i></a>
+                            </dd>
+
+                        </dl>
+                    </div>
+
+                    <script type="text/plain" data-path="src/routes/tribes/+page.svelte"            data-source="example_1_1.txt"></script>
+                    <script type="text/plain" data-path="src/routes/tribes/+page.server.ts"         data-source="example_1_2.txt"></script>
+                    <script type="text/plain" data-path="src/routes/tribes/ServerBrowser.svelte"    data-source="example_1_3.txt"></script>
+                    <script type="text/plain" data-path="src/routes/tribes/ServerModal.svelte"      data-source="example_1_4.txt"></script>
+                    <script type="text/plain" data-path="src/lib/server/tribes.ts"                  data-source="example_1_5.txt"></script>
+                    <script type="text/plain" data-path="src/lib/server/cacheHandler.ts"            data-source="example_1_6.txt"></script>
+                    <script type="text/plain" data-path="src/lib/types/tribes.ts"                   data-source="example_1_7.txt"></script>
+                    <script type="text/plain" data-path="src/routes/api/tribes/master/+server.ts"   data-source="example_1_8.txt"></script>
+                    <script type="text/plain" data-path="src/routes/api/tribes/[ip]/+server.ts"     data-source="example_1_9.txt"></script>
+                </section>
+
+                <section data-example="2" hidden>
+                    <div class="rounded-lg border border-neutral-200 p-5">
+                        <h2 class="text-lg font-semibold">Constant Contact OAuth Integration</h2>
+                        <dl class="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-[10rem_1fr] [&>dt]:font-medium [&>dd]:text-neutral-700">
+                        <dt>What it is</dt>
+                        <dd>An API client and admin page that adds new storefront customers to Constant Contact mailing lists. Includes manual
+                            entry, OAuth re-authorization, and a paginated log of every API call.</dd>
+                        <dt>My role</dt>
+                        <dd>Sole developer for a freelance client.</dd>
+                        <dt>Highlights</dt>
+                        <dd>
+                            <ul class="list-disc space-y-1 pl-5">
+                                <li>OAuth 2.0 authorization-code flow: session-checked state parameter, token
+                                    exchange, and refresh tokens stored in the database.</li>
+                                <li>REST integration over cURL with error handling. Expired access tokens refresh automatically and the failed
+                                    request retries once.</li>
+                                <li>Every call is logged and shown in the admin as a readable history with status and error details.</li>
+                                <li>CSRF protection and output escaping throughout.</li>
+                                <li>Server-rendered PHP templates with logic kept out of the markup, plus accessible forms and tables.</li>
+                            </ul>
+                        </dd>
+                            <dt>Tech</dt>
+                            <dd class="flex flex-wrap gap-1.5">
+                                <span class="chip" data-icon="fa-brands fa-php">PHP</span>
+                                <span class="chip" data-icon="si:mysql">MySQL</span>
+                                <span class="chip" data-icon="fa-solid fa-key">OAuth 2.0</span>
+                                <span class="chip" data-icon="fa-solid fa-plug">REST API</span>
+                                <span class="chip" data-icon="si:tailwindcss">Tailwind</span>
+                            </dd>
+                        </dl>
+                    </div>
+                
+                    <script type="text/plain" data-path="includes/classes/constant_contact.php"     data-source="example_2_1.txt"></script>
+                    <script type="text/plain" data-path="admin/api_constant_contact.php"            data-source="example_2_2.txt"></script>
+                </section>
+
+            </main>
+        </div>
+    </div>
+    <script type="module" src="./code-examples.js"></script>
+</body>
+
+</html>

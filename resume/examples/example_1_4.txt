@@ -1,0 +1,358 @@
+    <script lang="ts">
+        import type { TribesServerModalProps } from '$lib/types/tribes';
+
+        let { server = $bindable(), onClose, embedded = false }: TribesServerModalProps = $props();
+
+        const RPG_MARKERS = ['rpgmod', 'rpg base', 'worlds_rpg'];
+
+        const TEXT_TAGS: Record<string, [open: string, close: string]> = {
+            '<jc>': ['<div style="text-align:center">', '</div>'],
+            '<f0>': ['<span style="color:#D88E00;">', '</span>'],
+            '<f1>': ['<span style="color:#FFD07B;">', '</span>'],
+            '<f2>': ['<span style="color:#fff;">', '</span>']
+        };
+
+        let clickSound: HTMLAudioElement | undefined = $state();
+        let lastRefreshed = 0;
+
+        const isRpg = $derived(
+            [server.game.game, server.game.mods].some((value) =>
+                RPG_MARKERS.some((marker) => value.toLowerCase().includes(marker))
+            )
+        );
+
+        function playClick() {
+            if (!clickSound) return;
+            clickSound.currentTime = 0;
+            clickSound.play().catch(() => {});
+        }
+
+        /** Re-queries the server, at most once every five seconds. */
+        async function refresh() {
+            playClick();
+            const now = Date.now();
+            if (now - lastRefreshed < 5000) return;
+            lastRefreshed = now;
+            try {
+                const response = await fetch(`/api/tribes/${server.server.address}`);
+                if (response.ok) server = await response.json();
+            } catch {
+                return;
+            }
+        }
+
+        function close() {
+            playClick();
+            onClose();
+        }
+
+        /** Converts a server's info text to safe HTML: trims it before the scoreboard, escapes it, and renders Tribes' font and centering tags. */
+        function formatDescription(text: string): string {
+            const openTags: string[] = [];
+            let formatted = text.slice(1).replace(/[^\t\n\r -~]/g, '');
+
+            const truncateIndex = [/Team Name/, /Name\t/, /\t/].reduce((index, pattern) => {
+                const found = formatted.search(pattern);
+                return found !== -1 && (index === -1 || found < index) ? found : index;
+            }, -1);
+            if (truncateIndex !== -1) formatted = formatted.slice(0, truncateIndex);
+
+            formatted = formatted
+                .split(/(<[a-z]{1,2}\d?>)/i)
+                .map((part, i) => {
+                    if (i % 2 === 0)
+                        return part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const tag = part.toLowerCase();
+                    if (!TEXT_TAGS[tag]) return '';
+                    openTags.push(tag);
+                    return TEXT_TAGS[tag][0];
+                })
+                .join('');
+
+            while (openTags.length) formatted += TEXT_TAGS[openTags.pop() as string][1];
+
+            return formatted.trim();
+        }
+    </script>
+
+<svelte:window onkeydown={(e)=> e.key === 'Escape' && close()} />
+
+    <audio bind:this={clickSound} src="/audio/Button1.wav" preload="auto"></audio>
+
+    <div class="modal-underlay" role="presentation" onclick={close}></div>
+    <div class="modal green-border" role="dialog" aria-modal="true" aria-label={server.server.name}>
+        <div class="inner">
+            <div class="info">
+                <span>Server Name</span>
+                <div>{server.server.name}</div>
+                <span>Ping</span>
+                <div>
+                    {server.server.ping}
+                    {#if server.server.packetLoss > 0}(Loss: {server.server.packetLoss}%){/if}
+                </div>
+                <span>IP Address</span>
+                <div>{server.server.address}</div>
+                <span>Version</span>
+                <div>{server.game.version}</div>
+                <span>Mods</span>
+                <div>{server.game.mods}</div>
+                <span>Dedicated?</span>
+                <div>{server.game.dedicated ? 'YES' : 'NO'}</div>
+                <span>Mission</span>
+                <div>{server.server.map} ({server.game.game.trim()})</div>
+                <span>Password?</span>
+                <div>{server.game.needpass ? 'YES' : 'NO'}</div>
+            </div>
+
+            <div class="desc green-border">
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                <p>{@html formatDescription(server.server.description)}</p>
+            </div>
+
+            <div class="details green-border">
+                {#if isRpg}
+                <table>
+                    <thead>
+                        <tr>
+                            {#each server.playerColumns as column, i (`${i}-${column}`)}
+                            <th class="pr-3">{column}</th>
+                            {/each}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each server.players as player, i (`${i}-${player.name}`)}
+                        <tr>
+                            {#each player.columns as value, j (`${j}-${value}`)}
+                            <td class="pr-3 align-top">{value}</td>
+                            {/each}
+                        </tr>
+                        {/each}
+                    </tbody>
+                </table>
+                {:else}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team Name</th>
+                            <th>Score</th>
+                            <th>Players</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each server.teams as team (team.id)}
+                        <tr>
+                            <td>{team.name}</td>
+                            <td>{team.score}</td>
+                            <td>{team.playercount}</td>
+                        </tr>
+                        {/each}
+                    </tbody>
+                </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player Name</th>
+                            <th>Team</th>
+                            <th>Score</th>
+                            <th>Ping</th>
+                            <th>PL</th>
+                            <th>Kills</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each server.players as player, i (`${i}-${player.name}`)}
+                        <tr>
+                            <td>{player.name}</td>
+                            <td>{server.teams.find((t) => t.id === player.team)?.name ?? ''}</td>
+                            <td>{player.score}</td>
+                            <td>{player.ping}</td>
+                            <td>{player.packetLoss}</td>
+                            <td></td>
+                        </tr>
+                        {/each}
+                    </tbody>
+                </table>
+                {/if}
+            </div>
+            {#if !embedded}
+            <p class="note">Bookmark this URL to return directly to this server.</p>
+            {/if}
+        </div>
+        <div class="buttons">
+            <button type="button" class="btn-link" onclick={refresh}>Refresh</button>
+            <button type="button" class="btn-link" onclick={close}>Done</button>
+        </div>
+    </div>
+
+    <style lang="scss">
+        .modal {
+            --bright-green: #3cec07;
+            --dark-green: #336600;
+            --light-orange: #ffd07b;
+            --dark-orange: #d88e00;
+            --grid-size: 10px;
+            color: var(--dark-orange);
+            background:
+                linear-gradient(0deg,
+                    transparent calc(var(--grid-size) - 1px),
+                    green calc(var(--grid-size) - 1px),
+                    green var(--grid-size),
+                    transparent var(--grid-size)) repeat-y,
+                linear-gradient(90deg,
+                    transparent calc(var(--grid-size) - 1px),
+                    green calc(var(--grid-size) - 1px),
+                    green var(--grid-size),
+                    transparent var(--grid-size)) repeat-x,
+                #000;
+            background-size: var(--grid-size) var(--grid-size);
+            background-repeat: repeat;
+            padding: 20px;
+            font-size: 14px;
+            cursor: url('/images/tribes/tribes-arrow.cur'), default;
+            width: 600px;
+            max-width: 95vw;
+            position: fixed !important;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10 !important;
+
+            .desc,
+            .details {
+                position: relative;
+                margin: 20px 20px 10px;
+                padding: 5px;
+            }
+
+            .details table {
+                min-width: 90%;
+                margin-bottom: 10px;
+                text-align: left;
+
+                th {
+                    color: var(--dark-orange);
+                    font-weight: normal;
+                }
+
+                td {
+                    color: #fff;
+                }
+            }
+
+            .desc {
+                white-space: pre-line;
+
+                p {
+                    font-weight: bold;
+                    margin: 0;
+                }
+            }
+
+            .inner {
+                background-color: #000;
+                padding-bottom: 10px;
+            }
+
+            .info {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2px;
+                padding-top: 10px;
+                margin: 0 10px;
+                font-weight: bold;
+
+                span {
+                    color: var(--light-orange);
+                    text-align: right;
+                    padding-right: 4px;
+                }
+
+                div {
+                    color: var(--dark-orange);
+                    white-space: nowrap;
+                }
+            }
+
+            .buttons {
+                text-align: right;
+                padding-top: 10px;
+
+                button {
+                    all: unset;
+                    text-transform: uppercase;
+                    font-weight: bold;
+                    margin-left: 10px;
+                    padding: 0 3px 0 0;
+                    cursor: url('/images/tribes/tribes-hand.cur'), default;
+                    color: #000;
+                    text-shadow:
+                        0 0 5px #fff,
+                        0 0 7px #fff,
+                        0 0 5px var(--bright-green),
+                        0 0 7px var(--bright-green),
+                        0 0 9px var(--bright-green),
+                        0 0 11px var(--bright-green),
+                        0 0 17px var(--bright-green);
+                    border: 2px solid var(--bright-green);
+                    border-width: 2px 0;
+
+                    &:focus-visible {
+                        outline: 1px dashed var(--light-orange);
+                    }
+
+                    &:active {
+                        top: 1px;
+                        left: 1px;
+                        position: relative;
+                        color: #aaa;
+                    }
+                }
+            }
+
+            .note {
+                text-align: center;
+                font-size: 11px;
+                margin: 0;
+            }
+        }
+
+        .modal-underlay {
+            position: fixed;
+            height: 100vh;
+            width: 100vw;
+            background-color: #0009;
+            z-index: 10;
+            top: 0;
+            left: 0;
+        }
+
+        .green-border {
+            outline: 1px solid var(--bright-green);
+            position: relative;
+            z-index: 1;
+
+            &::before {
+                content: '';
+                position: absolute;
+                inset: 0 -4px;
+                border-left: 1px solid var(--bright-green);
+                border-right: 1px solid var(--bright-green);
+                z-index: -1;
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                inset: -4px 0;
+                border-top: 1px solid var(--bright-green);
+                border-bottom: 1px solid var(--bright-green);
+                z-index: -1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .modal .info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
