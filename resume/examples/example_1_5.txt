@@ -77,7 +77,7 @@ export const TRIBES_LINKS: TribesLink[] = [
 	{ label: 't1m1.pu.net', href: 'https://t1m1.pu.net/', defunct: true }
 ];
 
-/** Huffman frequencies and tree are based on the original Tribes 1.40 source code, used by Torque Engine's HuffmanProcessor. **
+/** Huffman frequencies and tree are based on the original Tribes 1.40 source code, used by Torque Engine's HuffmanProcessor. **/
 const HUFF_FREQS = [
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 329, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	2809, 68, 0, 27, 0, 58, 3, 62, 4, 7, 0, 0, 15, 65, 554, 3, 394, 404, 189, 117, 30, 51, 27, 15, 34,
